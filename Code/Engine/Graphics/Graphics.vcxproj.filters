@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Effect.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="CameraObject.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Texture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Direct3D">
+      <UniqueIdentifier>{f294f630-5f3b-4299-9d82-771fede4d2ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL">
+      <UniqueIdentifier>{693c692e-e64c-4d5b-8f4c-43556c5e1944}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Direct3D\Graphics.d3d.cpp">
+      <Filter>Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\Graphics.gl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct3D\Mesh.d3d.cpp">
+      <Filter>Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\Mesh.gl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="OpenGL\Effect.gl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct3D\Effect.d3d.cpp">
+      <Filter>Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="CameraObject.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Texture.cpp" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,13 @@
+return
+{
+	vertexShaderPath = "data/vertex.shader",
+	fragmentShaderPath = "data/fragment.shader",
+	
+	renderStates =
+	{
+		alphaTransparency = false,
+		depthTesting = true,
+		depthWriting = true,
+		faceCulling = true,
+	}
+}
