@@ -25,14 +25,13 @@ namespace eae6320
 	{
 		extern CameraObject* s_camera;
 
+		extern GameObject* s_boxes_obj;
 		extern GameObject* s_ceiling_obj;
-		extern GameObject* s_cement_obj;
 		extern GameObject* s_floor_obj;
-		extern GameObject* s_lambert2_obj;
-		extern GameObject* s_lambert3_obj;
+		extern GameObject* s_innerWalls_obj;
 		extern GameObject* s_metal_obj;
+		extern GameObject* s_outerWalls_obj;
 		extern GameObject* s_railing_obj;
-		extern GameObject* s_walls_obj;
 
 		bool Initialize( const HWND i_renderingWindow );
 		void Render();

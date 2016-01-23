@@ -9,14 +9,13 @@ return
 		targetExtension = ".binMesh",
 		assets =
 		{
+			"boxes",
 			"ceiling",
-			"cement",
 			"floor",
-			"lambert2",
-			"lambert3",
+			"innerWalls",
 			"metal",
+			"outerWalls",
 			"railing",
-			"walls",
 		},
 		dependencies =
 		{
@@ -80,14 +79,13 @@ return
 		targetExtension = ".binMaterial",
 		assets =
 		{
+			"boxes",
 			"ceiling",
-			"cement",
 			"floor",
-			"lambert2",
-			"lambert3",
+			"innerWalls",
 			"metal",
+			"outerWalls",
 			"railing",
-			"walls",
 		},
 		dependencies =
 		{
@@ -102,11 +100,12 @@ return
 		targetExtension = ".texture",
 		assets =
 		{
-			"cement_wall",
+			"boxes",
 			"floor",
-			"metal_brace",
+			"innerWalls",
+			"metal",
+			"outerWalls",
 			"railing",
-			"wall",
 		},
 		dependencies =
 		{

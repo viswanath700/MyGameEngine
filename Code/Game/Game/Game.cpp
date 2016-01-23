@@ -64,57 +64,17 @@ namespace Game
 			const float unitsToMove = unitsPerSecond * eae6320::Time::GetSecondsElapsedThisFrame();	// This makes the speed frame-rate-independent
 																									// Normalize the offset
 			offset *= unitsToMove;
-			rotationOffset *= unitsToMove;
+			rotationOffset *= unitsToMove / 100.0f;
 		}
+		// Setting camera rotation once for x axis and once for y axis
+		eae6320::Graphics::s_camera->m_orientaion = eae6320::Graphics::s_camera->m_orientaion * eae6320::Math::cQuaternion(rotationOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
+
 		// The following line assumes there is some "entity" for the rectangle that the game code controls
 		// that encapsulates a mesh, an effect, and a position offset.
 		// You don't have to do it this way for your assignment!
 		// You just need a way to update the position offset associated with the colorful rectangle.
 		eae6320::Graphics::s_camera->UpdatePosition(offset);
-
-		// Setting camera rotation once for x axis and once for y axis
-		eae6320::Graphics::s_camera->m_orientaion = eae6320::Graphics::s_camera->m_orientaion * eae6320::Math::cQuaternion(rotationOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
-
-		return !wereThereErrors;
-	}
-
-	// Helper to update camera position
-	bool UpdateCamera_vector()
-	{
-		bool wereThereErrors = false;
-
-		eae6320::Math::cVector rotationOffset(0.0f, 0.0f, 0.0f);
-		{
-			// Get the direction
-			{
-				if (eae6320::UserInput::IsKeyPressed('A'))
-				{
-					rotationOffset.y -= 0.3f;
-				}
-				if (eae6320::UserInput::IsKeyPressed('D'))
-				{
-					rotationOffset.y += 0.3f;
-				}
-				if (eae6320::UserInput::IsKeyPressed('W'))
-				{
-					rotationOffset.x -= 0.3f;
-				}
-				if (eae6320::UserInput::IsKeyPressed('S'))
-				{
-					rotationOffset.x += 0.3f;
-				}
-			}
-			// Get the speed
-			const float unitsPerSecond = 3.0f;	// This is arbitrary
-			const float unitsToMove = unitsPerSecond * eae6320::Time::GetSecondsElapsedThisFrame();	// This makes the speed frame-rate-independent
-																												// Normalize the offset
-			rotationOffset *= unitsToMove;
-		}
-
-		// Setting camera rotation once for x axis and once for y axis
-		eae6320::Graphics::s_camera->m_orientaion = eae6320::Graphics::s_camera->m_orientaion * eae6320::Math::cQuaternion(rotationOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
-		eae6320::Graphics::s_camera->m_orientaion = eae6320::Graphics::s_camera->m_orientaion * eae6320::Math::cQuaternion(rotationOffset.x, eae6320::Math::cVector(1.0f, 0.0f, 0.0f));
-
+		
 		return !wereThereErrors;
 	}
 
