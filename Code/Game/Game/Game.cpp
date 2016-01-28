@@ -67,7 +67,7 @@ namespace Game
 			rotationOffset *= unitsToMove / 100.0f;
 		}
 		// Setting camera rotation once for x axis and once for y axis
-		eae6320::Graphics::s_camera->m_orientaion = eae6320::Graphics::s_camera->m_orientaion * eae6320::Math::cQuaternion(rotationOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
+		eae6320::Graphics::s_camera->UpdateOrientation(rotationOffset);
 
 		// The following line assumes there is some "entity" for the rectangle that the game code controls
 		// that encapsulates a mesh, an effect, and a position offset.

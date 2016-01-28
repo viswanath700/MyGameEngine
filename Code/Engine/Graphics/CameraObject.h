@@ -32,6 +32,7 @@ namespace eae6320
 			};
 
 			void UpdatePosition(Math::cVector i_position_offset);
+			void UpdateOrientation(Math::cVector i_rotation_offset);
 		};
 
 	}
