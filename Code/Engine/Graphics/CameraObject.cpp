@@ -2,28 +2,20 @@
 //=============
 #include "CameraObject.h"
 #include "../Math/cMatrix_transformation.h"
-#include "../Math/Functions.h"
-#include <math.h>
 
 // Interface
 //==========
 
 void eae6320::Graphics::CameraObject::UpdatePosition(Math::cVector i_position_offset)
 {
-	float angleAroundY = 2 * asin(m_orientaion.m_y);
-
-	float twoPi = 2 * eae6320::Math::Pi;
-
-	/*if(angleAroundY > twoPi)
-		angleAroundY = */
-
-	float x = i_position_offset.x * cos(angleAroundY) - i_position_offset.z * sin(angleAroundY);
-	float z = i_position_offset.x * sin(angleAroundY) + i_position_offset.z * cos(angleAroundY);
-
-	m_position += Math::cVector(x, i_position_offset.y, z);
+	// To move the camera in the direction it is pointing at
+	Math::cMatrix_transformation i_localToWorldTransform = Math::cMatrix_transformation(m_orientation, m_position);
+	m_position = Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransform, i_position_offset);
 }
 
 void eae6320::Graphics::CameraObject::UpdateOrientation(Math::cVector i_rotation_offset)
 {
-	m_orientaion = m_orientaion * eae6320::Math::cQuaternion(i_rotation_offset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
+	m_orientation = m_orientation * eae6320::Math::cQuaternion(i_rotation_offset.x, eae6320::Math::cVector(1.0f, 0.0f, 0.0f));
+	m_orientation = m_orientation * eae6320::Math::cQuaternion(i_rotation_offset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
+	m_orientation = m_orientation * eae6320::Math::cQuaternion(i_rotation_offset.z, eae6320::Math::cVector(0.0f, 0.0f, 1.0f));
 }

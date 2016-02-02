@@ -7,7 +7,6 @@
 #include <sstream>
 #include <fstream>
 #include "../../UserOutput/UserOutput.h"
-#include "../../Math/Functions.h"
 #include "../../Math/cMatrix_transformation.h"
 
 // Interface
@@ -76,8 +75,8 @@ void eae6320::Graphics::Effect::SetDrawCallUniforms(eae6320::Math::cMatrix_trans
 {
 	HRESULT result;
 	{
-		Math::cMatrix_transformation i_worldToViewTransform = Math::cMatrix_transformation::CreateWorldToViewTransform(i_camera.m_orientaion, i_camera.m_position);
-		Math::cMatrix_transformation i_viewToScreenTransform = Math::cMatrix_transformation::CreateViewToScreenTransform(Math::ConvertDegreesToRadians(60), (float)800 / 600, 0.1f, 10000);
+		Math::cMatrix_transformation i_worldToViewTransform = Math::cMatrix_transformation::CreateWorldToViewTransform(i_camera.m_orientation, i_camera.m_position);
+		Math::cMatrix_transformation i_viewToScreenTransform = Math::cMatrix_transformation::CreateViewToScreenTransform(i_camera.m_fieldOfView_y, i_camera.m_aspectRatio, i_camera.m_z_nearPlane, i_camera.m_z_farPlane);
 		
 		result = m_vertexShaderConstantTable->SetMatrixTranspose(eae6320::Graphics::GetLocalDirect3dDevice(), m_transformLocalToWorld, reinterpret_cast<const D3DXMATRIX*>(&i_localToWorldTransform));
 		assert(SUCCEEDED(result));
