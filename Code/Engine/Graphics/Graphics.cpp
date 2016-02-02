@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "../Math/cMatrix_transformation.h"
 #include "../Math/cVector.h"
+#include "DebugShapes.h"
 
 eae6320::Graphics::CameraObject* eae6320::Graphics::s_camera = NULL;
 
@@ -15,6 +16,9 @@ eae6320::Graphics::GameObject* eae6320::Graphics::s_innerWalls_obj = NULL;
 eae6320::Graphics::GameObject* eae6320::Graphics::s_metal_obj = NULL;
 eae6320::Graphics::GameObject* eae6320::Graphics::s_outerWalls_obj = NULL;
 eae6320::Graphics::GameObject* eae6320::Graphics::s_railing_obj = NULL;
+
+eae6320::Graphics::DebugLine s_debugLine1;
+eae6320::Graphics::DebugSphere s_debugSphere1;
 
 bool eae6320::Graphics::LoadObjects()
 {
@@ -41,6 +45,9 @@ bool eae6320::Graphics::LoadObjects()
 		return false;
 	}
 
+	s_debugLine1 = eae6320::Graphics::DebugLine(Math::cVector(0.0f, 0.0f, 0.0f), Math::cVector(50.0f, 50.0f, 50.0f));
+	s_debugSphere1 = eae6320::Graphics::DebugSphere(Math::cVector(0.0f, 0.0f, -1000.0f), 20.0f, 20, 20);
+
 	return true;
 }
 
@@ -48,6 +55,8 @@ void eae6320::Graphics::Render()
 {
 	ClearFrame();
 	StartFrame();
+
+	s_debugLine1.DrawLine();
 
 	// Drawing Opaque list
 	s_boxes_obj->DrawObject();
@@ -58,8 +67,14 @@ void eae6320::Graphics::Render()
 	s_outerWalls_obj->DrawObject();
 	s_railing_obj->DrawObject();
 
+
+	s_debugSphere1.DrawSphere();
+
 	// Drawing Transparent list
 	//
+
+	// Drawing Debug Shapes
+	//s_debugLine1.DrawLine();
 
 	EndFrame();
 	ShowFrame();

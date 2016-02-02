@@ -8,6 +8,7 @@
     <ClInclude Include="CameraObject.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="DebugShapes.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Direct3D">
@@ -43,5 +44,6 @@
     <ClCompile Include="CameraObject.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="DebugShapes.cpp" />
   </ItemGroup>
 </Project>
