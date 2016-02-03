@@ -47,6 +47,7 @@ namespace eae6320
 			float m_size;
 			Math::cVector m_color;
 			LPDIRECT3DVERTEXBUFFER9 m_vBuffer;
+			LPDIRECT3DINDEXBUFFER9 m_iBuffer;
 
 		public:
 			DebugBox() {};

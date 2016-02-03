@@ -18,6 +18,7 @@ eae6320::Graphics::GameObject* eae6320::Graphics::s_outerWalls_obj = NULL;
 eae6320::Graphics::GameObject* eae6320::Graphics::s_railing_obj = NULL;
 
 eae6320::Graphics::DebugLine s_debugLine1;
+eae6320::Graphics::DebugBox s_debugBox1;
 eae6320::Graphics::DebugSphere s_debugSphere1;
 
 bool eae6320::Graphics::LoadObjects()
@@ -34,6 +35,7 @@ bool eae6320::Graphics::LoadObjects()
 	s_railing_obj = new GameObject("data/railing.binMesh", "data/railing.binMaterial");
 
 	s_debugLine1 = eae6320::Graphics::DebugLine(Math::cVector(0.0f, 0.0f, 0.0f), Math::cVector(50.0f, 50.0f, 50.0f), Math::cVector(1.0f, 0.0f, 0.0f));
+	s_debugBox1 = eae6320::Graphics::DebugBox();
 	s_debugSphere1 = eae6320::Graphics::DebugSphere(Math::cVector(0.0f, 0.0f, -1000.0f), 20.0f, 20, 20);
 
 	// Initialize the level
@@ -49,7 +51,7 @@ bool eae6320::Graphics::LoadObjects()
 	}
 
 	s_debugLine1.LoadDebugLine();
-	
+	s_debugBox1.LoadDebugBox();
 
 	return true;
 }
@@ -58,8 +60,6 @@ void eae6320::Graphics::Render()
 {
 	ClearFrame();
 	StartFrame();
-
-	s_debugLine1.DrawLine();
 
 	// Drawing Opaque list
 	s_boxes_obj->DrawObject();
@@ -70,14 +70,13 @@ void eae6320::Graphics::Render()
 	s_outerWalls_obj->DrawObject();
 	s_railing_obj->DrawObject();
 
-
-	s_debugSphere1.DrawSphere();
-
 	// Drawing Transparent list
 	//
 
 	// Drawing Debug Shapes
-	//s_debugLine1.DrawLine();
+	s_debugLine1.DrawLine();
+	s_debugBox1.DrawBox();
+	s_debugSphere1.DrawSphere();
 
 	EndFrame();
 	ShowFrame();
