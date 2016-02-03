@@ -59,7 +59,7 @@ namespace eae6320
 			cMatrix_transformation();	// Identity
 			cMatrix_transformation( const cQuaternion& i_rotation, const cVector& i_translation );
 
-			float Get(int i_row, int i_col) const { return *((&m_00) + i_row * 4 + i_col); }
+			float Get(size_t i_row, size_t i_col) const { return *((&m_00) + i_row * 4 + i_col); }
 
 			// Data
 			//=====

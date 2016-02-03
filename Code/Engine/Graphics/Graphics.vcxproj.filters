@@ -44,6 +44,11 @@
     <ClCompile Include="CameraObject.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="DebugShapes.cpp" />
+    <ClCompile Include="OpenGL\DebugShapes.gl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct3D\DebugShapes.d3d.cpp">
+      <Filter>Direct3D</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

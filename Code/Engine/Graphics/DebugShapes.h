@@ -7,6 +7,7 @@ This file contains the function declarations for graphics
 
 // Header Files
 //=============
+#include <cstdint>
 #include "../Math/cVector.h"
 
 // Interface
@@ -16,11 +17,18 @@ namespace eae6320
 {
 	namespace Graphics
 	{
+		struct CUSTOMVERTEX
+		{
+			float x, y, z;
+			uint8_t b, g, r, a;
+		};
+
 		class DebugLine {
 
 			Math::cVector m_startPoint;
 			Math::cVector m_endPoint;
 			Math::cVector m_color;
+			LPDIRECT3DVERTEXBUFFER9 m_vBuffer;
 
 		public:
 			DebugLine() {};
@@ -30,6 +38,7 @@ namespace eae6320
 				m_color(i_color)
 			{
 			}
+			void LoadDebugLine();
 			void DrawLine();
 		};
 
@@ -37,6 +46,7 @@ namespace eae6320
 			Math::cVector m_position;
 			float m_size;
 			Math::cVector m_color;
+			LPDIRECT3DVERTEXBUFFER9 m_vBuffer;
 
 		public:
 			DebugBox() {};
@@ -46,6 +56,7 @@ namespace eae6320
 				m_color(i_color)
 			{
 			}
+			void LoadDebugBox();
 			void DrawBox();
 		};
 

@@ -1,11 +1,10 @@
 // Header Files
 //=============
-#include "DebugShapes.h"
+#include "../DebugShapes.h"
 
-#include "../../External/OpenGlExtensions/OpenGlExtensions.h"
+#include "../../../External/OpenGlExtensions/OpenGlExtensions.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
-//#include "D3D9Types.h"
 
 // Interface
 //==========

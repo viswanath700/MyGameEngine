@@ -33,6 +33,9 @@ bool eae6320::Graphics::LoadObjects()
 	s_outerWalls_obj = new GameObject("data/outerWalls.binMesh", "data/outerWalls.binMaterial");
 	s_railing_obj = new GameObject("data/railing.binMesh", "data/railing.binMaterial");
 
+	s_debugLine1 = eae6320::Graphics::DebugLine(Math::cVector(0.0f, 0.0f, 0.0f), Math::cVector(50.0f, 50.0f, 50.0f), Math::cVector(1.0f, 0.0f, 0.0f));
+	s_debugSphere1 = eae6320::Graphics::DebugSphere(Math::cVector(0.0f, 0.0f, -1000.0f), 20.0f, 20, 20);
+
 	// Initialize the level
 	if (!s_boxes_obj->LoadObject() ||
 		!s_ceiling_obj->LoadObject() ||
@@ -45,8 +48,8 @@ bool eae6320::Graphics::LoadObjects()
 		return false;
 	}
 
-	s_debugLine1 = eae6320::Graphics::DebugLine(Math::cVector(0.0f, 0.0f, 0.0f), Math::cVector(50.0f, 50.0f, 50.0f));
-	s_debugSphere1 = eae6320::Graphics::DebugSphere(Math::cVector(0.0f, 0.0f, -1000.0f), 20.0f, 20, 20);
+	s_debugLine1.LoadDebugLine();
+	
 
 	return true;
 }
