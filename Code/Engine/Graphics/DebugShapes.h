@@ -67,6 +67,9 @@ namespace eae6320
 			size_t m_slices;
 			size_t m_stacks;
 			Math::cVector m_color;
+			LPDIRECT3DVERTEXBUFFER9 m_vBuffer;
+			uint32_t m_vertexCount;
+			uint32_t m_triangleCount;
 
 		public:
 			DebugSphere() {};
@@ -78,6 +81,7 @@ namespace eae6320
 				m_color(i_color)
 			{
 			}
+			void LoadDebugSphere();
 			void DrawSphere();
 		};
 	}
