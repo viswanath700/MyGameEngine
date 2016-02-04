@@ -21,6 +21,23 @@ namespace eae6320
 		{
 			float x, y, z;
 			uint8_t b, g, r, a;
+
+			CUSTOMVERTEX()
+			{
+
+			}
+
+
+			CUSTOMVERTEX(float i_x, float i_y, float i_z, uint8_t i_r, uint8_t i_b, uint8_t i_g)
+			{
+				x = i_x;
+				y = i_y;
+				z = i_z;
+				r = i_r;
+				b = i_b;
+				g = i_g;
+				a = 255;
+			}
 		};
 
 		class DebugLine {
@@ -68,8 +85,9 @@ namespace eae6320
 			size_t m_stacks;
 			Math::cVector m_color;
 			LPDIRECT3DVERTEXBUFFER9 m_vBuffer;
+			LPDIRECT3DINDEXBUFFER9 m_iBuffer;
 			uint32_t m_vertexCount;
-			uint32_t m_triangleCount;
+			uint32_t m_indexCount;
 
 		public:
 			DebugSphere() {};

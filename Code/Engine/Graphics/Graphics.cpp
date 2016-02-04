@@ -36,7 +36,7 @@ bool eae6320::Graphics::LoadObjects()
 
 	s_debugLine1 = eae6320::Graphics::DebugLine(Math::cVector(0.0f, 0.0f, 0.0f), Math::cVector(50.0f, 50.0f, 50.0f), Math::cVector(1.0f, 0.0f, 0.0f));
 	s_debugBox1 = eae6320::Graphics::DebugBox(Math::cVector(30.0f, -20.0f, -40.0f), 20.0f, Math::cVector(0.0f, 1.0f, 0.0f));
-	s_debugSphere1 = eae6320::Graphics::DebugSphere(Math::cVector(0.0f, 0.0f, 0.0f), 30.0f, 20, 20, Math::cVector(0.0f, 0.0f, 1.0f));
+	s_debugSphere1 = eae6320::Graphics::DebugSphere(Math::cVector(50.0f, 0.0f, -50.0f), 30.0f, 20, 20, Math::cVector(0.0f, 0.0f, 1.0f));
 
 	// Initialize the level
 	if (!s_boxes_obj->LoadObject() ||
@@ -50,7 +50,7 @@ bool eae6320::Graphics::LoadObjects()
 		return false;
 	}
 
-	s_debugLine1.LoadDebugLine();
+	//s_debugLine1.LoadDebugLine();
 	s_debugBox1.LoadDebugBox();
 	s_debugSphere1.LoadDebugSphere();
 
@@ -64,19 +64,19 @@ void eae6320::Graphics::Render()
 
 	// Drawing Opaque list
 	s_boxes_obj->DrawObject();
-	s_ceiling_obj->DrawObject();
-	s_floor_obj->DrawObject();
-	s_innerWalls_obj->DrawObject();
-	s_metal_obj->DrawObject();
-	s_outerWalls_obj->DrawObject();
-	s_railing_obj->DrawObject();
+	//s_ceiling_obj->DrawObject();
+	//s_floor_obj->DrawObject();
+	//s_innerWalls_obj->DrawObject();
+	//s_metal_obj->DrawObject();
+	//s_outerWalls_obj->DrawObject();
+	//s_railing_obj->DrawObject();
 
 	// Drawing Transparent list
 	//
 
 	// Drawing Debug Shapes
-	s_debugLine1.DrawLine();
-	s_debugBox1.DrawBox();
+	//s_debugLine1.DrawLine();
+	//s_debugBox1.DrawBox();
 	s_debugSphere1.DrawSphere();
 
 	EndFrame();
