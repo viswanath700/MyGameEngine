@@ -233,6 +233,12 @@ void eae6320::Graphics::DebugSphere::LoadDebugSphere()
 
 	// lock v_buffer and load the vertices into it
 	m_vBuffer->Lock(0, 0, (void**)&pVoid, 0);
+	for (int i = 0; i < m_vertexCount; i++)
+	{
+		vertices[i].x += m_center.x;
+		vertices[i].y += m_center.y;
+		vertices[i].z += m_center.z;
+	}
 	memcpy(pVoid, vertices, m_vertexCount * sizeof(CUSTOMVERTEX));
 	m_vBuffer->Unlock();
 
@@ -240,7 +246,7 @@ void eae6320::Graphics::DebugSphere::LoadDebugSphere()
 	Graphics::GetLocalDirect3dDevice()->CreateIndexBuffer(m_indexCount * sizeof(unsigned int),
 		0,
 		D3DFMT_INDEX32,
-		D3DPOOL_MANAGED,
+		D3DPOOL_DEFAULT,
 		&m_iBuffer,
 		NULL);
 

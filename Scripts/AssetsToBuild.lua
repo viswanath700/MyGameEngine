@@ -16,6 +16,8 @@ return
 			"metal",
 			"outerWalls",
 			"railing",
+			"cylinder1",
+			"cylinder2",
 		},
 		dependencies =
 		{
@@ -86,6 +88,8 @@ return
 			"metal",
 			"outerWalls",
 			"railing",
+			"cylinder1",
+			"cylinder2",
 		},
 		dependencies =
 		{

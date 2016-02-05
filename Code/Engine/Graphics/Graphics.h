@@ -33,6 +33,9 @@ namespace eae6320
 		extern GameObject* s_outerWalls_obj;
 		extern GameObject* s_railing_obj;
 
+		extern GameObject* s_debugCylinder1;
+		extern GameObject* s_debugCylinder2;
+
 		bool Initialize( const HWND i_renderingWindow );
 		void Render();
 		bool ShutDown();

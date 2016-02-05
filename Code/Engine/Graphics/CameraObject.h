@@ -31,7 +31,7 @@ namespace eae6320
 
 		public:
 			CameraObject() :
-				m_position(Math::cVector(0, 0, 10)),
+				m_position(Math::cVector(0, 0, 100)),
 				m_orientation(Math::cQuaternion()),
 				m_fieldOfView_y(Math::ConvertDegreesToRadians(60)),
 				m_aspectRatio((float)800 / 600),
