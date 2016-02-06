@@ -18,6 +18,8 @@ eae6320::Graphics::GameSprite::GameSprite()
 
 	//We are not initialized yet
 	m_initialized = false;
+
+	m_texPortion = NULL;
 }
 
 eae6320::Graphics::GameSprite::GameSprite(float x, float y)
@@ -33,6 +35,8 @@ eae6320::Graphics::GameSprite::GameSprite(float x, float y)
 
 	//We are not initialized yet
 	m_initialized = false;
+
+	m_texPortion = NULL;
 }
 
 bool eae6320::Graphics::GameSprite::Initialize(LPDIRECT3DDEVICE9 device, std::string file, int width, int height)
@@ -56,6 +60,12 @@ bool eae6320::Graphics::GameSprite::Initialize(LPDIRECT3DDEVICE9 device, std::st
 
 	m_initialized = true;
 
+	m_texPortion = new RECT();
+	m_texPortion->left = 0;
+	m_texPortion->top = 0;
+	m_texPortion->right = width;
+	m_texPortion->bottom = height;
+
 	return true;
 }
 
@@ -71,7 +81,7 @@ void eae6320::Graphics::GameSprite::Draw()
 	{
 		m_sprite->Begin(D3DXSPRITE_ALPHABLEND);
 
-		m_sprite->Draw(m_texture, NULL, NULL, &m_position, m_color);
+		m_sprite->Draw(m_texture, m_texPortion, NULL, &m_position, m_color);
 
 		m_sprite->End();
 	}

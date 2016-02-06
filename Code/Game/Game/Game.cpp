@@ -12,7 +12,7 @@
 
 namespace Game
 {
-	bool spaceKeyPressed = false;
+	uint8_t pressedNum = 0;
 
 	// Helper to update renderable position
 	bool UpdateEntities_vector()
@@ -79,19 +79,54 @@ namespace Game
 	}
 
 	// Helper to detect shooting based on user input
-	bool ShootInput()
+	bool UpdateSprite()
 	{
 		bool wereThereErrors = false;
 
-		if (eae6320::UserInput::IsKeyPressed(VK_SPACE))
+		if (eae6320::UserInput::IsKeyPressed('0') || eae6320::UserInput::IsKeyPressed(VK_NUMPAD0))
 		{
+			pressedNum = 0;
+		}
+		if (eae6320::UserInput::IsKeyPressed('1') || eae6320::UserInput::IsKeyPressed(VK_NUMPAD1))
+		{
+			pressedNum = 1;
+		}
+		if (eae6320::UserInput::IsKeyPressed('2') || eae6320::UserInput::IsKeyPressed(VK_NUMPAD2))
+		{
+			pressedNum = 2;
+		}
+		if (eae6320::UserInput::IsKeyPressed('3') || eae6320::UserInput::IsKeyPressed(VK_NUMPAD3))
+		{
+			pressedNum = 3;
+		}
+		if (eae6320::UserInput::IsKeyPressed('4') || eae6320::UserInput::IsKeyPressed(VK_NUMPAD4))
+		{
+			pressedNum = 4;
+		}
+		if (eae6320::UserInput::IsKeyPressed('5') || eae6320::UserInput::IsKeyPressed(VK_NUMPAD5))
+		{
+			pressedNum = 5;
+		}
+		if (eae6320::UserInput::IsKeyPressed('6') || eae6320::UserInput::IsKeyPressed(VK_NUMPAD6))
+		{
+			pressedNum = 6;
+		}
+		if (eae6320::UserInput::IsKeyPressed('7') || eae6320::UserInput::IsKeyPressed(VK_NUMPAD7))
+		{
+			pressedNum = 7;
+		}
+		if (eae6320::UserInput::IsKeyPressed('8') || eae6320::UserInput::IsKeyPressed(VK_NUMPAD8))
+		{
+			pressedNum = 8;
+		}
+		if (eae6320::UserInput::IsKeyPressed('9') || eae6320::UserInput::IsKeyPressed(VK_NUMPAD9))
+		{
+			pressedNum = 9;
+		}
 
-			spaceKeyPressed = true;
-		}
-		else
-		{
-			spaceKeyPressed = false;
-		}
+		float eachBlockSize = 512 / 10;
+		eae6320::Graphics::s_numbers->m_texPortion->left = eachBlockSize * pressedNum;
+		eae6320::Graphics::s_numbers->m_texPortion->right = eachBlockSize * (pressedNum + 1);
 
 		return !wereThereErrors;
 	}
@@ -104,7 +139,7 @@ namespace Game
 		eae6320::Time::OnNewFrame();
 
 		UpdateEntities_vector();
-		ShootInput();
+		UpdateSprite();
 		//MoveObjects();
 
 		eae6320::Graphics::Render();

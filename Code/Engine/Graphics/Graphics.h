@@ -10,6 +10,7 @@
 
 #include "GameObject.h"
 #include "CameraObject.h"
+#include "GameSprite.h"
 #include "../Windows/WindowsIncludes.h"
 
 #ifdef EAE6320_PLATFORM_D3D
@@ -35,6 +36,8 @@ namespace eae6320
 
 		extern GameObject* s_debugCylinder1;
 		extern GameObject* s_debugCylinder2;
+
+		extern GameSprite* s_numbers;
 
 		bool Initialize( const HWND i_renderingWindow );
 		void Render();

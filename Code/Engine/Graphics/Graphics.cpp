@@ -29,6 +29,7 @@ eae6320::Graphics::DebugSphere s_debugSphere1;
 eae6320::Graphics::DebugSphere s_debugSphere2;
 
 eae6320::Graphics::GameSprite s_logo;
+eae6320::Graphics::GameSprite* eae6320::Graphics::s_numbers = NULL;
 
 bool eae6320::Graphics::LoadObjects()
 {
@@ -55,6 +56,7 @@ bool eae6320::Graphics::LoadObjects()
 
 	// Game Sprites
 	s_logo = GameSprite(10, 10);
+	s_numbers = new GameSprite(650, 100);
 
 	// Initialize the level
 	if (!s_boxes_obj->LoadObject() ||
@@ -80,6 +82,7 @@ bool eae6320::Graphics::LoadObjects()
 
 	// Loading Game Sprites
 	s_logo.Initialize(GetLocalDirect3dDevice(), "data/logo.texture", 256, 256);
+	s_numbers->Initialize(GetLocalDirect3dDevice(), "data/numbers.texture", 512, 64);
 
 	return true;
 }
@@ -118,6 +121,7 @@ void eae6320::Graphics::Render()
 
 	// Drawing Game Sprites
 	s_logo.Draw();
+	s_numbers->Draw();
 
 	EndFrame();
 	ShowFrame();

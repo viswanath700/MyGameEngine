@@ -38,6 +38,9 @@ namespace eae6320
 			D3DXVECTOR3 m_position;
 			D3DCOLOR m_color;
 			bool m_initialized;
+
+		public:
+			RECT* m_texPortion;
 		};
 	}
 }
