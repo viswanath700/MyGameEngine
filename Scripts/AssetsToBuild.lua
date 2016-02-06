@@ -110,6 +110,8 @@ return
 			"metal",
 			"outerWalls",
 			"railing",
+			"logo",
+			"numbers",
 		},
 		dependencies =
 		{

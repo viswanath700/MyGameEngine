@@ -9,6 +9,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="DebugShapes.h" />
+    <ClInclude Include="GameSprite.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Direct3D">
@@ -46,6 +47,9 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="OpenGL\DebugShapes.gl.cpp">
       <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct3D\GameSprite.d3d.cpp">
+      <Filter>Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="Direct3D\DebugShapes.d3d.cpp">
       <Filter>Direct3D</Filter>

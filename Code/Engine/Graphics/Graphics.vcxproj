@@ -23,6 +23,7 @@
     <ClInclude Include="DebugShapes.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameSprite.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
@@ -30,14 +31,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CameraObject.cpp" />
-    <ClCompile Include="Direct3D\DebugShapes.d3d.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="Direct3D\DebugShapes.d3d.cpp" />
     <ClCompile Include="Direct3D\Effect.d3d.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Direct3D\GameSprite.d3d.cpp" />
     <ClCompile Include="Direct3D\Graphics.d3d.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

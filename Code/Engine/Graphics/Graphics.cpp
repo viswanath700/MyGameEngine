@@ -6,6 +6,7 @@
 #include "../Math/cMatrix_transformation.h"
 #include "../Math/cVector.h"
 #include "DebugShapes.h"
+#include "GameSprite.h"
 
 eae6320::Graphics::CameraObject* eae6320::Graphics::s_camera = NULL;
 
@@ -27,6 +28,8 @@ eae6320::Graphics::DebugBox s_debugBox2;
 eae6320::Graphics::DebugSphere s_debugSphere1;
 eae6320::Graphics::DebugSphere s_debugSphere2;
 
+eae6320::Graphics::GameSprite s_logo;
+
 bool eae6320::Graphics::LoadObjects()
 {
 	s_camera = new CameraObject();
@@ -40,6 +43,7 @@ bool eae6320::Graphics::LoadObjects()
 	s_outerWalls_obj = new GameObject("data/outerWalls.binMesh", "data/outerWalls.binMaterial");
 	s_railing_obj = new GameObject("data/railing.binMesh", "data/railing.binMaterial");
 
+	// Debug Shapes
 	s_debugLine1 = eae6320::Graphics::DebugLine(Math::cVector(100.0f, 0.0f, 0.0f), Math::cVector(75.0f, -50.0f, -50.0f), Math::cVector(0.0f, 0.4f, 0.2f));
 	s_debugLine2 = eae6320::Graphics::DebugLine(Math::cVector(-100.0f, 0.0f, -70.0f), Math::cVector(-50.0f, -50.0f, -50.0f), Math::cVector(1.0f, 0.0f, 0.0f));
 	s_debugBox1 = eae6320::Graphics::DebugBox(Math::cVector(30.0f, -20.0f, -40.0f), 20.0f, Math::cVector(1.0f, 0.0f, 1.0f));
@@ -48,6 +52,9 @@ bool eae6320::Graphics::LoadObjects()
 	s_debugSphere2 = eae6320::Graphics::DebugSphere(Math::cVector(-50.0f, 0.0f, -250.0f), 30.0f, 20, 20, Math::cVector(0.0f, 1.0f, 1.0f));
 	s_debugCylinder1 = new GameObject("data/cylinder1.binMesh", "data/cylinder1.binMaterial");
 	s_debugCylinder2 = new GameObject("data/cylinder2.binMesh", "data/cylinder2.binMaterial");
+
+	// Game Sprites
+	s_logo = GameSprite(10, 10);
 
 	// Initialize the level
 	if (!s_boxes_obj->LoadObject() ||
@@ -61,6 +68,7 @@ bool eae6320::Graphics::LoadObjects()
 		return false;
 	}
 
+	// Loading Debug Shapes
 	s_debugLine1.LoadDebugLine();
 	s_debugLine2.LoadDebugLine();
 	s_debugBox1.LoadDebugBox();
@@ -69,6 +77,9 @@ bool eae6320::Graphics::LoadObjects()
 	s_debugSphere2.LoadDebugSphere();
 	s_debugCylinder1->LoadObject();
 	s_debugCylinder2->LoadObject();
+
+	// Loading Game Sprites
+	s_logo.Initialize(GetLocalDirect3dDevice(), "data/logo.texture", 256, 256);
 
 	return true;
 }
@@ -104,6 +115,9 @@ void eae6320::Graphics::Render()
 	s_debugCylinder2->DrawObject();
 	Graphics::GetLocalDirect3dDevice()->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 #endif
+
+	// Drawing Game Sprites
+	s_logo.Draw();
 
 	EndFrame();
 	ShowFrame();
