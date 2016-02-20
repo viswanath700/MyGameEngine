@@ -9,6 +9,7 @@ This file contains the function declarations for DebugMenu
 //=============
 #include <d3dx9.h>
 #include <string>
+#include "GameSprite.h"
 
 // Interface
 //==========
@@ -40,6 +41,28 @@ namespace eae6320
 			void LoadDebugText();
 			void DrawDebugText();
 			void SetFPS(float i_fps);
+		};
+
+		class DebugMenuCheckBox
+		{
+		public:
+			bool m_isChecked;
+			GameSprite m_checkBox;
+
+		private:
+			DebugMenuText m_Text;
+
+		public:
+			DebugMenuCheckBox() {};
+			DebugMenuCheckBox(std::string i_message, float i_posX, float i_posY, float i_width, float i_height)
+			{
+				m_isChecked = true;
+				m_Text = DebugMenuText(i_message, i_posX, i_posY, i_width, i_height);
+				m_checkBox = GameSprite(i_posX + i_width, i_posY);
+			}
+
+			void LoadDebugCheckBox();
+			void DrawDebugCheckBox();
 		};
 	}
 }

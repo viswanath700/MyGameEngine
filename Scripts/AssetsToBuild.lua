@@ -112,6 +112,7 @@ return
 			"railing",
 			"logo",
 			"numbers",
+			"checkbox",
 		},
 		dependencies =
 		{

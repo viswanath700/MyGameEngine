@@ -87,17 +87,22 @@ void eae6320::Graphics::GameSprite::Draw()
 	}
 }
 
-eae6320::Graphics::GameSprite::~GameSprite()
+void eae6320::Graphics::GameSprite::ReleaseSprite()
 {
-	/*if (m_sprite)
+	if (!m_sprite)
 	{
 		m_sprite->Release();
 		m_sprite = 0;
 	}
 
-	if (m_texture)
+	if (!m_texture)
 	{
 		m_texture->Release();
 		m_texture = 0;
-	}*/
+	}
+}
+
+eae6320::Graphics::GameSprite::~GameSprite()
+{
+	ReleaseSprite();
 }

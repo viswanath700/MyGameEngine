@@ -10,6 +10,8 @@
 // Interface
 //==========
 
+// DebugMenuText
+
 void eae6320::Graphics::DebugMenuText::LoadDebugText()
 {
 	D3DXCreateFont(Graphics::GetLocalDirect3dDevice(), 22, 0, FW_NORMAL, 1, false, DEFAULT_CHARSET,
@@ -27,4 +29,18 @@ void eae6320::Graphics::DebugMenuText::SetFPS(float i_fps)
 	ss << std::setprecision(std::numeric_limits<float>::digits10 + 1);
 	ss << i_fps;
 	m_message = "FPS = " + ss.str();
+}
+
+// DebugMenuCheckBox
+
+void eae6320::Graphics::DebugMenuCheckBox::LoadDebugCheckBox()
+{
+	m_Text.LoadDebugText();
+	m_checkBox.Initialize(GetLocalDirect3dDevice(), "data/checkbox.texture", 20, 20);
+}
+
+void eae6320::Graphics::DebugMenuCheckBox::DrawDebugCheckBox()
+{
+	m_Text.DrawDebugText();
+	m_checkBox.Draw();
 }

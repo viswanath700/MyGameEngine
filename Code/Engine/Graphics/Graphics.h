@@ -12,6 +12,7 @@
 #include "CameraObject.h"
 #include "GameSprite.h"
 #include "../Windows/WindowsIncludes.h"
+#include "DebugMenu.h"
 
 #ifdef EAE6320_PLATFORM_D3D
 #include <d3d9.h>
@@ -38,6 +39,9 @@ namespace eae6320
 		extern GameObject* s_debugCylinder2;
 
 		extern GameSprite* s_numbers;
+
+		extern DebugMenuCheckBox* s_debugMenuCheckBox;
+		extern bool s_debugMenuEnabled;
 
 		bool Initialize( const HWND i_renderingWindow );
 		void Render();

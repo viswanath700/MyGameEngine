@@ -13,6 +13,7 @@
 namespace Game
 {
 	uint8_t pressedNum = 0;
+	bool tildePressed = false;
 
 	// Helper to update renderable position
 	bool UpdateEntities_vector()
@@ -131,6 +132,25 @@ namespace Game
 		return !wereThereErrors;
 	}
 
+	// Enable DebugMenu
+	void EnableDebugMenu()
+	{
+		if (eae6320::UserInput::IsKeyPressed(VK_OEM_3))
+		{
+			if (!tildePressed)
+			{
+				if (eae6320::Graphics::s_debugMenuEnabled == true)
+					eae6320::Graphics::s_debugMenuEnabled = false;
+				else
+					eae6320::Graphics::s_debugMenuEnabled = true;
+			}
+
+			tildePressed = true;
+		}
+		else
+			tildePressed = false;
+	}
+
 	bool Initialize(const HWND i_renderingWindow) {
 		return eae6320::Graphics::Initialize(i_renderingWindow);
 	}
@@ -138,9 +158,13 @@ namespace Game
 	void Run() {
 		eae6320::Time::OnNewFrame();
 
-		UpdateEntities_vector();
-		UpdateSprite();
-		//MoveObjects();
+		EnableDebugMenu();
+
+		if (eae6320::Graphics::s_debugMenuEnabled == false)
+		{
+			UpdateEntities_vector();
+			UpdateSprite();
+		}
 
 		eae6320::Graphics::Render();
 	}

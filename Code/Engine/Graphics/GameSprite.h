@@ -29,6 +29,8 @@ namespace eae6320
 			bool Initialize(LPDIRECT3DDEVICE9 device, std::string file, int width, int height);
 			bool IsInitialized();
 			virtual void Draw();
+			void ReleaseSprite();
+
 		private:
 			//Pointers
 			LPDIRECT3DTEXTURE9 m_texture;

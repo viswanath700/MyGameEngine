@@ -8,7 +8,6 @@
 #include "../Time/Time.h"
 #include "DebugShapes.h"
 #include "GameSprite.h"
-#include "DebugMenu.h"
 
 eae6320::Graphics::CameraObject* eae6320::Graphics::s_camera = NULL;
 
@@ -34,6 +33,9 @@ eae6320::Graphics::GameSprite s_logo;
 eae6320::Graphics::GameSprite* eae6320::Graphics::s_numbers = NULL;
 
 eae6320::Graphics::DebugMenuText s_debugMenuTextFPS;
+eae6320::Graphics::DebugMenuCheckBox* eae6320::Graphics::s_debugMenuCheckBox = NULL;
+
+bool eae6320::Graphics::s_debugMenuEnabled = false;
 
 bool eae6320::Graphics::LoadObjects()
 {
@@ -63,7 +65,8 @@ bool eae6320::Graphics::LoadObjects()
 	s_numbers = new GameSprite(650, 100);
 
 	// Debug Menu Stuff
-	s_debugMenuTextFPS = eae6320::Graphics::DebugMenuText("FPS = ", 20, 20, 500, 200);
+	s_debugMenuTextFPS = eae6320::Graphics::DebugMenuText("FPS = ", 20, 20, 150, 50);
+	s_debugMenuCheckBox = new eae6320::Graphics::DebugMenuCheckBox("Enable Debug Spheres ", 20, 50, 200, 50);
 
 	// Initialize the level
 	if (!s_boxes_obj->LoadObject() ||
@@ -93,6 +96,7 @@ bool eae6320::Graphics::LoadObjects()
 
 	// Loading DebugMebu Items
 	s_debugMenuTextFPS.LoadDebugText();
+	s_debugMenuCheckBox->LoadDebugCheckBox();
 
 	return true;
 }
@@ -130,14 +134,18 @@ void eae6320::Graphics::Render()
 #endif
 
 	// Drawing Game Sprites
-	s_logo.Draw();
+	//s_logo.Draw();
 	s_numbers->Draw();
 
 	// Drawing Debug Menu Items
 #ifdef _DEBUG
-	float fpsCount = 1 / Time::GetSecondsElapsedThisFrame();
-	s_debugMenuTextFPS.SetFPS(fpsCount);
-	s_debugMenuTextFPS.DrawDebugText();
+	if (s_debugMenuEnabled)
+	{
+		float fpsCount = 1 / Time::GetSecondsElapsedThisFrame();
+		s_debugMenuTextFPS.SetFPS(fpsCount);
+		s_debugMenuTextFPS.DrawDebugText();
+		s_debugMenuCheckBox->DrawDebugCheckBox();
+	}
 #endif
 
 	EndFrame();
