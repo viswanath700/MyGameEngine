@@ -5,8 +5,10 @@
 #include "GameObject.h"
 #include "../Math/cMatrix_transformation.h"
 #include "../Math/cVector.h"
+#include "../Time/Time.h"
 #include "DebugShapes.h"
 #include "GameSprite.h"
+#include "DebugMenu.h"
 
 eae6320::Graphics::CameraObject* eae6320::Graphics::s_camera = NULL;
 
@@ -30,6 +32,8 @@ eae6320::Graphics::DebugSphere s_debugSphere2;
 
 eae6320::Graphics::GameSprite s_logo;
 eae6320::Graphics::GameSprite* eae6320::Graphics::s_numbers = NULL;
+
+eae6320::Graphics::DebugMenuText s_debugMenuTextFPS;
 
 bool eae6320::Graphics::LoadObjects()
 {
@@ -58,6 +62,9 @@ bool eae6320::Graphics::LoadObjects()
 	s_logo = GameSprite(10, 10);
 	s_numbers = new GameSprite(650, 100);
 
+	// Debug Menu Stuff
+	s_debugMenuTextFPS = eae6320::Graphics::DebugMenuText("FPS = ", 20, 20, 500, 200);
+
 	// Initialize the level
 	if (!s_boxes_obj->LoadObject() ||
 		!s_ceiling_obj->LoadObject() ||
@@ -83,6 +90,9 @@ bool eae6320::Graphics::LoadObjects()
 	// Loading Game Sprites
 	s_logo.Initialize(GetLocalDirect3dDevice(), "data/logo.texture", 256, 256);
 	s_numbers->Initialize(GetLocalDirect3dDevice(), "data/numbers.texture", 512, 64);
+
+	// Loading DebugMebu Items
+	s_debugMenuTextFPS.LoadDebugText();
 
 	return true;
 }
@@ -122,6 +132,13 @@ void eae6320::Graphics::Render()
 	// Drawing Game Sprites
 	s_logo.Draw();
 	s_numbers->Draw();
+
+	// Drawing Debug Menu Items
+#ifdef _DEBUG
+	float fpsCount = 1 / Time::GetSecondsElapsedThisFrame();
+	s_debugMenuTextFPS.SetFPS(fpsCount);
+	s_debugMenuTextFPS.DrawDebugText();
+#endif
 
 	EndFrame();
 	ShowFrame();
