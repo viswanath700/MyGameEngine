@@ -6,7 +6,6 @@
 #include "../Math/cMatrix_transformation.h"
 #include "../Math/cVector.h"
 #include "../Time/Time.h"
-#include "DebugShapes.h"
 #include "GameSprite.h"
 
 eae6320::Graphics::CameraObject* eae6320::Graphics::s_camera = NULL;
@@ -26,14 +25,16 @@ eae6320::Graphics::DebugLine s_debugLine1;
 eae6320::Graphics::DebugLine s_debugLine2;
 eae6320::Graphics::DebugBox s_debugBox1;
 eae6320::Graphics::DebugBox s_debugBox2;
-eae6320::Graphics::DebugSphere s_debugSphere1;
+eae6320::Graphics::DebugSphere* eae6320::Graphics::s_debugSphere1 = NULL;
 eae6320::Graphics::DebugSphere s_debugSphere2;
 
 eae6320::Graphics::GameSprite s_logo;
 eae6320::Graphics::GameSprite* eae6320::Graphics::s_numbers = NULL;
 
+eae6320::Graphics::DebugMenuSelection eae6320::Graphics::s_activeMenuItem;
 eae6320::Graphics::DebugMenuText s_debugMenuTextFPS;
 eae6320::Graphics::DebugMenuCheckBox* eae6320::Graphics::s_debugMenuCheckBox = NULL;
+eae6320::Graphics::DebugMenuSlider* eae6320::Graphics::s_debugMenuSlider = NULL;
 
 bool eae6320::Graphics::s_debugMenuEnabled = false;
 
@@ -55,7 +56,7 @@ bool eae6320::Graphics::LoadObjects()
 	s_debugLine2 = eae6320::Graphics::DebugLine(Math::cVector(-100.0f, 0.0f, -70.0f), Math::cVector(-50.0f, -50.0f, -50.0f), Math::cVector(1.0f, 0.0f, 0.0f));
 	s_debugBox1 = eae6320::Graphics::DebugBox(Math::cVector(30.0f, -20.0f, -40.0f), 20.0f, Math::cVector(1.0f, 0.0f, 1.0f));
 	s_debugBox2 = eae6320::Graphics::DebugBox(Math::cVector(-30.0f, 20.0f, -40.0f), 15.0f, Math::cVector(0.0f, 0.0f, 0.3f));
-	s_debugSphere1 = eae6320::Graphics::DebugSphere(Math::cVector(-50.0f, 0.0f, -150.0f), 20.0f, 20, 20, Math::cVector(0.2f, 0.4f, 0.0f));
+	s_debugSphere1 = new DebugSphere(Math::cVector(-50.0f, 0.0f, -150.0f), 20.0f, 20, 20, Math::cVector(0.2f, 0.4f, 0.0f));
 	s_debugSphere2 = eae6320::Graphics::DebugSphere(Math::cVector(-50.0f, 0.0f, -250.0f), 30.0f, 20, 20, Math::cVector(0.0f, 1.0f, 1.0f));
 	s_debugCylinder1 = new GameObject("data/cylinder1.binMesh", "data/cylinder1.binMaterial");
 	s_debugCylinder2 = new GameObject("data/cylinder2.binMesh", "data/cylinder2.binMaterial");
@@ -64,9 +65,12 @@ bool eae6320::Graphics::LoadObjects()
 	s_logo = GameSprite(10, 10);
 	s_numbers = new GameSprite(650, 100);
 
+#ifdef _DEBUG
 	// Debug Menu Stuff
 	s_debugMenuTextFPS = eae6320::Graphics::DebugMenuText("FPS = ", 20, 20, 150, 50);
-	s_debugMenuCheckBox = new eae6320::Graphics::DebugMenuCheckBox("Enable Debug Spheres ", 20, 50, 200, 50);
+	s_debugMenuCheckBox = new eae6320::Graphics::DebugMenuCheckBox("Enable Debug Sphere ", 20, 50, 200, 50);
+	s_debugMenuSlider = new eae6320::Graphics::DebugMenuSlider("Radius of Debug Sphere ", 20, 80, 200, 50);
+#endif
 
 	// Initialize the level
 	if (!s_boxes_obj->LoadObject() ||
@@ -85,7 +89,7 @@ bool eae6320::Graphics::LoadObjects()
 	s_debugLine2.LoadDebugLine();
 	s_debugBox1.LoadDebugBox();
 	s_debugBox2.LoadDebugBox();
-	s_debugSphere1.LoadDebugSphere();
+	s_debugSphere1->LoadDebugSphere();
 	s_debugSphere2.LoadDebugSphere();
 	s_debugCylinder1->LoadObject();
 	s_debugCylinder2->LoadObject();
@@ -94,9 +98,13 @@ bool eae6320::Graphics::LoadObjects()
 	s_logo.Initialize(GetLocalDirect3dDevice(), "data/logo.texture", 256, 256);
 	s_numbers->Initialize(GetLocalDirect3dDevice(), "data/numbers.texture", 512, 64);
 
+#ifdef _DEBUG
 	// Loading DebugMebu Items
+	s_activeMenuItem = DebugMenuSelection::Text;
 	s_debugMenuTextFPS.LoadDebugText();
 	s_debugMenuCheckBox->LoadDebugCheckBox();
+	s_debugMenuSlider->LoadDebugSlider();
+#endif
 
 	return true;
 }
@@ -124,8 +132,12 @@ void eae6320::Graphics::Render()
 	s_debugLine2.DrawLine();
 	s_debugBox1.DrawBox();
 	s_debugBox2.DrawBox();
-	s_debugSphere1.DrawSphere();
-	s_debugSphere2.DrawSphere();
+
+	if (s_debugMenuCheckBox->m_isChecked)
+	{
+		s_debugSphere1->DrawSphere();
+		//s_debugSphere2.DrawSphere();
+	}
 
 	Graphics::GetLocalDirect3dDevice()->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	s_debugCylinder1->DrawObject();
@@ -143,8 +155,29 @@ void eae6320::Graphics::Render()
 	{
 		float fpsCount = 1 / Time::GetSecondsElapsedThisFrame();
 		s_debugMenuTextFPS.SetFPS(fpsCount);
-		s_debugMenuTextFPS.DrawDebugText();
-		s_debugMenuCheckBox->DrawDebugCheckBox();
+
+		switch (s_activeMenuItem)
+		{
+		case DebugMenuSelection::Text:
+			s_debugMenuTextFPS.DrawDebugText(255);
+			s_debugMenuCheckBox->DrawDebugCheckBox(0);
+			s_debugMenuSlider->DrawDebugSlider(0);
+			break;
+		case DebugMenuSelection::CheckBox:
+			s_debugMenuTextFPS.DrawDebugText(0);
+			s_debugMenuCheckBox->DrawDebugCheckBox(255);
+			s_debugMenuSlider->DrawDebugSlider(0);
+			break;
+
+		case DebugMenuSelection::Slider:
+			s_debugMenuTextFPS.DrawDebugText(0);
+			s_debugMenuCheckBox->DrawDebugCheckBox(0);
+			s_debugMenuSlider->DrawDebugSlider(255);
+			break;
+
+		default:
+			break;
+		}
 	}
 #endif
 

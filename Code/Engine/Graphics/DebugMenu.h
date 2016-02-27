@@ -18,10 +18,16 @@ namespace eae6320
 {
 	namespace Graphics
 	{
+		enum DebugMenuSelection
+		{
+			Text, CheckBox, Slider, Button
+		};
+
 		class DebugMenuText
 		{
-		private:
+		public:
 			std::string m_message;
+		private:
 			LPD3DXFONT m_font;
 			LPRECT m_textArea;
 
@@ -39,7 +45,7 @@ namespace eae6320
 			};
 
 			void LoadDebugText();
-			void DrawDebugText();
+			void DrawDebugText(uint8_t color);
 			void SetFPS(float i_fps);
 		};
 
@@ -62,7 +68,30 @@ namespace eae6320
 			}
 
 			void LoadDebugCheckBox();
-			void DrawDebugCheckBox();
+			void DrawDebugCheckBox(uint8_t i_color);
+		};
+
+		class DebugMenuSlider
+		{
+		public:
+			uint8_t value;
+			DebugMenuText m_Text;
+			std::string m_textMessage;
+			std::string m_sliderMsg;
+			int sliderCurrentPosition;
+			int sliderLastPosition;
+
+		public:
+			DebugMenuSlider() {};
+			DebugMenuSlider(std::string i_message, float i_posX, float i_posY, float i_width, float i_height)
+			{
+				m_textMessage = i_message;
+				m_sliderMsg = "*-------------------";
+				m_Text = DebugMenuText(i_message, i_posX, i_posY, i_width, i_height);
+			}
+
+			void LoadDebugSlider();
+			void DrawDebugSlider(uint8_t color);
 		};
 	}
 }

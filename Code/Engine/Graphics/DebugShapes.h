@@ -79,8 +79,10 @@ namespace eae6320
 		};
 
 		class DebugSphere {
+		public:
 			Math::cVector m_center;
 			float m_radius;
+		private:
 			size_t m_slices;
 			size_t m_stacks;
 			Math::cVector m_color;

@@ -13,6 +13,7 @@
 #include "GameSprite.h"
 #include "../Windows/WindowsIncludes.h"
 #include "DebugMenu.h"
+#include "DebugShapes.h"
 
 #ifdef EAE6320_PLATFORM_D3D
 #include <d3d9.h>
@@ -35,12 +36,15 @@ namespace eae6320
 		extern GameObject* s_outerWalls_obj;
 		extern GameObject* s_railing_obj;
 
+		extern DebugSphere* s_debugSphere1;
 		extern GameObject* s_debugCylinder1;
 		extern GameObject* s_debugCylinder2;
 
 		extern GameSprite* s_numbers;
 
+		extern DebugMenuSelection s_activeMenuItem;
 		extern DebugMenuCheckBox* s_debugMenuCheckBox;
+		extern DebugMenuSlider* s_debugMenuSlider;
 		extern bool s_debugMenuEnabled;
 
 		bool Initialize( const HWND i_renderingWindow );

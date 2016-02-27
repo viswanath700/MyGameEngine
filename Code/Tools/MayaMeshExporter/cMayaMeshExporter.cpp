@@ -747,6 +747,7 @@ namespace
 				{
 					fout << "\t\t{\n";
 					fout << "\t\t\tposition = {" << i_vertexBuffer[i].x << ", " << i_vertexBuffer[i].y << ", " << i_vertexBuffer[i].z << "},\n";
+					fout << "\t\t\tnormal = {" << i_vertexBuffer[i].nx << ", " << i_vertexBuffer[i].ny << ", " << i_vertexBuffer[i].nz << "},\n";
 					fout << "\t\t\tcolor = {" << i_vertexBuffer[i].r << ", " << i_vertexBuffer[i].g << ", " << i_vertexBuffer[i].b << ", " << i_vertexBuffer[i].a << "},\n";
 					fout << "\t\t\ttexture = {" << i_vertexBuffer[i].u << ", " << i_vertexBuffer[i].v << "},\n";
 					fout << "\t\t},\n";

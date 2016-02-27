@@ -14,6 +14,11 @@ namespace Game
 {
 	uint8_t pressedNum = 0;
 	bool tildePressed = false;
+	uint8_t debugMenuSelection = 0;
+	bool upPressed = false;
+	bool downPressed = false;
+	bool rightPressed = false;
+	bool leftPressed = false;
 
 	// Helper to update renderable position
 	bool UpdateEntities_vector()
@@ -151,6 +156,130 @@ namespace Game
 			tildePressed = false;
 	}
 
+	void UpdateSelectedMenuItem(bool isRight)
+	{
+		switch (debugMenuSelection)
+		{
+		case 0:
+			// Do Nothing
+			break;
+
+		case 1:
+			if (eae6320::Graphics::s_debugMenuCheckBox->m_isChecked == true)
+				eae6320::Graphics::s_debugMenuCheckBox->m_isChecked = false;
+			else
+				eae6320::Graphics::s_debugMenuCheckBox->m_isChecked = true;
+			break;
+
+		case 2:
+		{
+			float radiusOffset = 2;
+			if (isRight)
+			{
+				if (!(eae6320::Graphics::s_debugMenuSlider->sliderCurrentPosition == 19))
+				{
+					eae6320::Graphics::s_debugSphere1->m_radius += radiusOffset;
+					eae6320::Graphics::s_debugMenuSlider->sliderCurrentPosition++;
+					if (eae6320::Graphics::s_debugMenuSlider->sliderCurrentPosition > 19)
+						eae6320::Graphics::s_debugMenuSlider->sliderCurrentPosition = 19;
+				}
+			}
+			else
+			{
+				if (!(eae6320::Graphics::s_debugMenuSlider->sliderCurrentPosition == 0))
+				{
+					eae6320::Graphics::s_debugSphere1->m_radius -= radiusOffset;
+					eae6320::Graphics::s_debugMenuSlider->sliderCurrentPosition--;
+					if (eae6320::Graphics::s_debugMenuSlider->sliderCurrentPosition < 0)
+						eae6320::Graphics::s_debugMenuSlider->sliderCurrentPosition = 0;
+				}
+			}
+			eae6320::Graphics::s_debugSphere1->LoadDebugSphere();
+			break;
+		}
+
+		case 3:
+
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	// Debug Menu Navigation
+	void DebugMenuNavigation()
+	{
+		if (eae6320::UserInput::IsKeyPressed(VK_UP))
+		{
+			if (!upPressed)
+			{
+				if(debugMenuSelection == 0) 
+					debugMenuSelection = 3;
+				else
+					debugMenuSelection -= 1;
+			}
+			upPressed = true;
+		}
+		else
+			upPressed = false;
+
+
+		if (eae6320::UserInput::IsKeyPressed(VK_DOWN))
+		{
+			if (!downPressed)
+			{
+				if (debugMenuSelection == 3)
+					debugMenuSelection = 0;
+				else
+					debugMenuSelection += 1;
+			}
+			downPressed = true;
+		}
+		else
+			downPressed = false;
+
+		switch (debugMenuSelection)
+		{
+		case 0:
+			eae6320::Graphics::s_activeMenuItem = eae6320::Graphics::DebugMenuSelection::Text;
+			break;
+		case 1:
+			eae6320::Graphics::s_activeMenuItem = eae6320::Graphics::DebugMenuSelection::CheckBox;
+			break;
+		case 2:
+			eae6320::Graphics::s_activeMenuItem = eae6320::Graphics::DebugMenuSelection::Slider;
+			break;
+		case 3:
+			eae6320::Graphics::s_activeMenuItem = eae6320::Graphics::DebugMenuSelection::Button;
+			break;
+		default:
+			break;
+		}
+
+		if (eae6320::UserInput::IsKeyPressed(VK_RIGHT))
+		{
+			if (!rightPressed)
+			{
+				UpdateSelectedMenuItem(true);
+			}
+			rightPressed = true;
+		}
+		else
+			rightPressed = false;
+
+		if (eae6320::UserInput::IsKeyPressed(VK_LEFT))
+		{
+			if (!leftPressed)
+			{
+				UpdateSelectedMenuItem(false);
+			}
+			leftPressed = true;
+		}
+		else
+			leftPressed = false;
+	}
+
 	bool Initialize(const HWND i_renderingWindow) {
 		return eae6320::Graphics::Initialize(i_renderingWindow);
 	}
@@ -164,6 +293,10 @@ namespace Game
 		{
 			UpdateEntities_vector();
 			UpdateSprite();
+		}
+		else
+		{
+			DebugMenuNavigation();
 		}
 
 		eae6320::Graphics::Render();
