@@ -113,6 +113,7 @@ return
 			"logo",
 			"numbers",
 			"checkbox",
+			"button",
 		},
 		dependencies =
 		{

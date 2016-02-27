@@ -45,6 +45,7 @@ namespace eae6320
 		extern DebugMenuSelection s_activeMenuItem;
 		extern DebugMenuCheckBox* s_debugMenuCheckBox;
 		extern DebugMenuSlider* s_debugMenuSlider;
+		extern DebugMenuButton* s_debugMenuButton;
 		extern bool s_debugMenuEnabled;
 
 		bool Initialize( const HWND i_renderingWindow );

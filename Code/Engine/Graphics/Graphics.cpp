@@ -35,6 +35,7 @@ eae6320::Graphics::DebugMenuSelection eae6320::Graphics::s_activeMenuItem;
 eae6320::Graphics::DebugMenuText s_debugMenuTextFPS;
 eae6320::Graphics::DebugMenuCheckBox* eae6320::Graphics::s_debugMenuCheckBox = NULL;
 eae6320::Graphics::DebugMenuSlider* eae6320::Graphics::s_debugMenuSlider = NULL;
+eae6320::Graphics::DebugMenuButton* eae6320::Graphics::s_debugMenuButton = NULL;
 
 bool eae6320::Graphics::s_debugMenuEnabled = false;
 
@@ -70,6 +71,7 @@ bool eae6320::Graphics::LoadObjects()
 	s_debugMenuTextFPS = eae6320::Graphics::DebugMenuText("FPS = ", 20, 20, 150, 50);
 	s_debugMenuCheckBox = new eae6320::Graphics::DebugMenuCheckBox("Enable Debug Sphere ", 20, 50, 200, 50);
 	s_debugMenuSlider = new eae6320::Graphics::DebugMenuSlider("Radius of Debug Sphere ", 20, 80, 200, 50);
+	s_debugMenuButton = new eae6320::Graphics::DebugMenuButton("Reset Radius of Debug Sphere ", 20, 110, 275, 50);
 #endif
 
 	// Initialize the level
@@ -104,6 +106,7 @@ bool eae6320::Graphics::LoadObjects()
 	s_debugMenuTextFPS.LoadDebugText();
 	s_debugMenuCheckBox->LoadDebugCheckBox();
 	s_debugMenuSlider->LoadDebugSlider();
+	s_debugMenuButton->LoadDebugButton();
 #endif
 
 	return true;
@@ -162,17 +165,28 @@ void eae6320::Graphics::Render()
 			s_debugMenuTextFPS.DrawDebugText(255);
 			s_debugMenuCheckBox->DrawDebugCheckBox(0);
 			s_debugMenuSlider->DrawDebugSlider(0);
+			s_debugMenuButton->DrawDebugButton(0);
 			break;
+
 		case DebugMenuSelection::CheckBox:
 			s_debugMenuTextFPS.DrawDebugText(0);
 			s_debugMenuCheckBox->DrawDebugCheckBox(255);
 			s_debugMenuSlider->DrawDebugSlider(0);
+			s_debugMenuButton->DrawDebugButton(0);
 			break;
 
 		case DebugMenuSelection::Slider:
 			s_debugMenuTextFPS.DrawDebugText(0);
 			s_debugMenuCheckBox->DrawDebugCheckBox(0);
 			s_debugMenuSlider->DrawDebugSlider(255);
+			s_debugMenuButton->DrawDebugButton(0);
+			break;
+
+		case DebugMenuSelection::Button:
+			s_debugMenuTextFPS.DrawDebugText(0);
+			s_debugMenuCheckBox->DrawDebugCheckBox(0);
+			s_debugMenuSlider->DrawDebugSlider(0);
+			s_debugMenuButton->DrawDebugButton(255);
 			break;
 
 		default:

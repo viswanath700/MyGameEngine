@@ -80,3 +80,17 @@ void eae6320::Graphics::DebugMenuSlider::DrawDebugSlider(uint8_t color)
 
 	m_Text.DrawDebugText(color);
 }
+
+// DebugMenuButton
+
+void eae6320::Graphics::DebugMenuButton::LoadDebugButton()
+{
+	m_Text.LoadDebugText();
+	m_button.Initialize(GetLocalDirect3dDevice(), "data/button.texture", 40, 20);
+}
+
+void eae6320::Graphics::DebugMenuButton::DrawDebugButton(uint8_t i_color)
+{
+	m_Text.DrawDebugText(i_color);
+	m_button.Draw();
+}

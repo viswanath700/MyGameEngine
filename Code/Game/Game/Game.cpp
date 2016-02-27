@@ -199,7 +199,9 @@ namespace Game
 		}
 
 		case 3:
-
+			eae6320::Graphics::s_debugSphere1->m_radius = 20;
+			eae6320::Graphics::s_debugMenuSlider->sliderCurrentPosition = 0;
+			eae6320::Graphics::s_debugSphere1->LoadDebugSphere();
 			break;
 
 		default:

@@ -93,6 +93,23 @@ namespace eae6320
 			void LoadDebugSlider();
 			void DrawDebugSlider(uint8_t color);
 		};
+
+		class DebugMenuButton
+		{
+			GameSprite m_button;
+			DebugMenuText m_Text;
+
+		public:
+			DebugMenuButton() {};
+			DebugMenuButton(std::string i_message, float i_posX, float i_posY, float i_width, float i_height)
+			{
+				m_Text = DebugMenuText(i_message, i_posX, i_posY, i_width, i_height);
+				m_button = GameSprite(i_posX + i_width, i_posY);
+			}
+
+			void LoadDebugButton();
+			void DrawDebugButton(uint8_t i_color);
+		};
 	}
 }
 
