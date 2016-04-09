@@ -20,7 +20,7 @@ namespace eae6320
 	{
 		enum DebugMenuSelection
 		{
-			Text, CheckBox, Slider, Button
+			Text, CheckBox, Slider, Button, ToggleCam
 		};
 
 		class DebugMenuText

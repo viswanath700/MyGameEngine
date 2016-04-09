@@ -108,6 +108,17 @@ eae6320::Math::cMatrix_transformation::cMatrix_transformation( const cQuaternion
 	m_22 = 1.0f - _2xx - _2yy;
 }
 
+void eae6320::Math::cMatrix_transformation::Transpose()
+{
+	for (size_t i = 0; i < 4; i++)
+		for (size_t j = i + 1; j < 4; j++)
+		{
+			float k = Get(i, j);	// *((&m_11) + i * 4 + j);
+			Set(i, j, Get(j, i));	//*((&m_11) + i * 4 + j) = *((&m_11) + j * 4 + i);
+			Set(j, i, k);	//*((&m_11) + j * 4 + i) = k;
+		}
+}
+
 // Implementation
 //===============
 

@@ -8,6 +8,7 @@
 #include "../../Engine/Math/cMatrix_transformation.h"
 #include "../../Engine/UserInput/UserInput.h"
 #include "../../Engine/Graphics/Graphics.h"
+#include "../../Engine/Graphics/DebugShapes.h"
 #include <math.h>
 
 namespace Game
@@ -27,6 +28,7 @@ namespace Game
 
 		eae6320::Math::cVector offset(0.0f, 0.0f, 0.0f);
 		eae6320::Math::cVector rotationOffset(0.0f, 0.0f, 0.0f);
+		eae6320::Math::cVector thirdPersonCamOffset(0.0f, 0.0f, 0.0f);
 		{
 			{
 				// Get the direction
@@ -64,6 +66,15 @@ namespace Game
 				{
 					rotationOffset.y += 0.3f;
 				}
+
+				if (eae6320::UserInput::IsKeyPressed('Z'))
+				{
+					thirdPersonCamOffset.x -= 1.0f;
+				}
+				if (eae6320::UserInput::IsKeyPressed('X'))
+				{
+					thirdPersonCamOffset.x += 1.0f;
+				}
 			}
 			// Get the speed
 			const float unitsPerSecond = 300.0f;	// This is arbitrary
@@ -72,14 +83,70 @@ namespace Game
 			offset *= unitsToMove;
 			rotationOffset *= unitsToMove / 100.0f;
 		}
-		// Setting camera rotation once for x axis and once for y axis
-		eae6320::Graphics::s_camera->UpdateOrientation(rotationOffset);
 
-		// The following line assumes there is some "entity" for the rectangle that the game code controls
-		// that encapsulates a mesh, an effect, and a position offset.
-		// You don't have to do it this way for your assignment!
-		// You just need a way to update the position offset associated with the colorful rectangle.
-		eae6320::Graphics::s_camera->UpdatePosition(offset);
+		if (eae6320::Graphics::s_toggleFPSCheckBox->m_isChecked)
+		{
+			// Setting camera rotation once for x axis and once for y axis
+			eae6320::Graphics::s_camera->UpdateOrientation(rotationOffset);
+
+			// The following line assumes there is some "entity" for the rectangle that the game code controls
+			// that encapsulates a mesh, an effect, and a position offset.
+			// You don't have to do it this way for your assignment!
+			// You just need a way to update the position offset associated with the colorful rectangle.
+			eae6320::Graphics::s_camera->UpdatePosition(offset);
+		}
+		else
+		{
+			eae6320::Math::cMatrix_transformation localToWorldTransformCamera = eae6320::Math::cMatrix_transformation(
+				eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_camera->m_position);
+			eae6320::Graphics::s_camera->m_position = eae6320::Math::cMatrix_transformation::matrixMulVector(localToWorldTransformCamera, eae6320::Math::cVector(0, 0, -300));
+			eae6320::Graphics::s_camera->UpdateOrientation(rotationOffset); 
+			localToWorldTransformCamera = eae6320::Math::cMatrix_transformation(eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_camera->m_position);
+			eae6320::Graphics::s_camera->m_position = eae6320::Math::cMatrix_transformation::matrixMulVector(localToWorldTransformCamera, eae6320::Math::cVector(0, 0, 300));
+
+			eae6320::Math::cVector oldSnowmanPos = eae6320::Graphics::s_snowman->m_position;
+			offset.y = 0.0f;
+
+			eae6320::Graphics::s_camera->UpdatePosition(thirdPersonCamOffset);
+
+			//eae6320::Math::cMatrix_transformation i_localToWorldTransformCamera = eae6320::Math::cMatrix_transformation(
+			//	eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_camera->m_position);
+			//eae6320::Math::cVector cameraPos = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformCamera, eae6320::Math::cVector());
+
+			eae6320::Math::cMatrix_transformation i_localToWorldTransformSnowman = eae6320::Math::cMatrix_transformation(
+				eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_snowman->m_position);
+			eae6320::Math::cVector newSnowmanPos = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformSnowman, offset);
+
+			eae6320::Graphics::s_snowman->m_position.x = newSnowmanPos.x;
+			eae6320::Graphics::s_snowman->m_position.z = newSnowmanPos.z;
+
+			eae6320::Math::cVector deltaVector = eae6320::Math::cVector(newSnowmanPos.x - eae6320::Graphics::s_camera->m_position.x, 0.0f,
+				newSnowmanPos.z - (eae6320::Graphics::s_camera->m_position.z - 300));
+			eae6320::Math::cMatrix_transformation cameraRotationTransform = eae6320::Math::cMatrix_transformation(
+				eae6320::Graphics::s_camera->m_orientation, eae6320::Math::cVector());
+			cameraRotationTransform.Transpose();
+			eae6320::Math::cVector newDeltaVector = eae6320::Math::cMatrix_transformation::matrixMulVector(cameraRotationTransform, deltaVector);
+
+			float deltaX = abs(newDeltaVector.x);
+			float deltaZ = abs(newDeltaVector.z); 
+
+			if (deltaX > 100 || deltaZ > 100)
+				eae6320::Graphics::s_camera->UpdatePosition(offset);
+
+
+
+			// Updating debug line for the player
+			oldSnowmanPos.y += 30;
+			newSnowmanPos.y = oldSnowmanPos.y;
+			if (!(newSnowmanPos == oldSnowmanPos))
+			{
+				eae6320::Math::cVector directionVector = (newSnowmanPos - oldSnowmanPos);
+				directionVector.Normalize();
+				eae6320::Graphics::s_snowmanLine->m_startPoint = newSnowmanPos;
+				eae6320::Graphics::s_snowmanLine->m_endPoint = newSnowmanPos + (directionVector * 50);
+				eae6320::Graphics::s_snowmanLine->LoadDebugLine();
+			}
+		}
 		
 		return !wereThereErrors;
 	}
@@ -204,6 +271,13 @@ namespace Game
 			eae6320::Graphics::s_debugSphere1->LoadDebugSphere();
 			break;
 
+		case 4:
+			if (eae6320::Graphics::s_toggleFPSCheckBox->m_isChecked == true)
+				eae6320::Graphics::s_toggleFPSCheckBox->m_isChecked = false;
+			else
+				eae6320::Graphics::s_toggleFPSCheckBox->m_isChecked = true;
+			break;
+
 		default:
 			break;
 		}
@@ -217,7 +291,7 @@ namespace Game
 			if (!upPressed)
 			{
 				if(debugMenuSelection == 0) 
-					debugMenuSelection = 3;
+					debugMenuSelection = 4;
 				else
 					debugMenuSelection -= 1;
 			}
@@ -231,7 +305,7 @@ namespace Game
 		{
 			if (!downPressed)
 			{
-				if (debugMenuSelection == 3)
+				if (debugMenuSelection == 4)
 					debugMenuSelection = 0;
 				else
 					debugMenuSelection += 1;
@@ -254,6 +328,9 @@ namespace Game
 			break;
 		case 3:
 			eae6320::Graphics::s_activeMenuItem = eae6320::Graphics::DebugMenuSelection::Button;
+			break;
+		case 4:
+			eae6320::Graphics::s_activeMenuItem = eae6320::Graphics::DebugMenuSelection::ToggleCam;
 			break;
 		default:
 			break;

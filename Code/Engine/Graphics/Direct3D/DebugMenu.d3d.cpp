@@ -27,7 +27,12 @@ void eae6320::Graphics::DebugMenuText::SetFPS(float i_fps)
 {
 	std::stringstream ss;
 	ss << std::setprecision(std::numeric_limits<float>::digits10 + 1);
-	ss << i_fps;
+	//ss << i_fps;
+	ss << s_snowman->m_position.x;
+	ss << "*";
+	ss << s_snowman->m_position.y;
+	ss << "*";
+	ss << s_snowman->m_position.z;
 	m_message = "FPS = " + ss.str();
 }
 

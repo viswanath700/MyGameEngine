@@ -40,12 +40,16 @@ namespace eae6320
 		extern GameObject* s_debugCylinder1;
 		extern GameObject* s_debugCylinder2;
 
+		extern GameObject* s_snowman;
+		extern DebugLine* s_snowmanLine;
+
 		extern GameSprite* s_numbers;
 
 		extern DebugMenuSelection s_activeMenuItem;
 		extern DebugMenuCheckBox* s_debugMenuCheckBox;
 		extern DebugMenuSlider* s_debugMenuSlider;
 		extern DebugMenuButton* s_debugMenuButton;
+		extern DebugMenuCheckBox* s_toggleFPSCheckBox;
 		extern bool s_debugMenuEnabled;
 
 		bool Initialize( const HWND i_renderingWindow );

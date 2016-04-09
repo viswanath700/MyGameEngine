@@ -21,6 +21,9 @@ eae6320::Graphics::GameObject* eae6320::Graphics::s_railing_obj = NULL;
 eae6320::Graphics::GameObject* eae6320::Graphics::s_debugCylinder1 = NULL;
 eae6320::Graphics::GameObject* eae6320::Graphics::s_debugCylinder2 = NULL;
 
+eae6320::Graphics::GameObject* eae6320::Graphics::s_snowman = NULL;
+eae6320::Graphics::DebugLine* eae6320::Graphics::s_snowmanLine = NULL;
+
 eae6320::Graphics::DebugLine s_debugLine1;
 eae6320::Graphics::DebugLine s_debugLine2;
 eae6320::Graphics::DebugBox s_debugBox1;
@@ -36,6 +39,7 @@ eae6320::Graphics::DebugMenuText s_debugMenuTextFPS;
 eae6320::Graphics::DebugMenuCheckBox* eae6320::Graphics::s_debugMenuCheckBox = NULL;
 eae6320::Graphics::DebugMenuSlider* eae6320::Graphics::s_debugMenuSlider = NULL;
 eae6320::Graphics::DebugMenuButton* eae6320::Graphics::s_debugMenuButton = NULL;
+eae6320::Graphics::DebugMenuCheckBox* eae6320::Graphics::s_toggleFPSCheckBox = NULL;
 
 bool eae6320::Graphics::s_debugMenuEnabled = false;
 
@@ -66,12 +70,17 @@ bool eae6320::Graphics::LoadObjects()
 	s_logo = GameSprite(10, 10);
 	s_numbers = new GameSprite(650, 100);
 
+	// Third person snowman
+	s_snowman = new GameObject("data/snowman.binMesh", "data/snowman.binMaterial");
+	s_snowmanLine = new eae6320::Graphics::DebugLine(Math::cVector(100.0f, 0.0f, 0.0f), Math::cVector(75.0f, -50.0f, -50.0f), Math::cVector(0.0f, 0.0f, 1.0f));
+
 #ifdef _DEBUG
 	// Debug Menu Stuff
 	s_debugMenuTextFPS = eae6320::Graphics::DebugMenuText("FPS = ", 20, 20, 150, 50);
 	s_debugMenuCheckBox = new eae6320::Graphics::DebugMenuCheckBox("Enable Debug Sphere ", 20, 50, 200, 50);
 	s_debugMenuSlider = new eae6320::Graphics::DebugMenuSlider("Radius of Debug Sphere ", 20, 80, 200, 50);
 	s_debugMenuButton = new eae6320::Graphics::DebugMenuButton("Reset Radius of Debug Sphere ", 20, 110, 275, 50);
+	s_toggleFPSCheckBox = new eae6320::Graphics::DebugMenuCheckBox("Enable Fly Camera ", 20, 140, 200, 50);
 #endif
 
 	// Initialize the level
@@ -107,7 +116,22 @@ bool eae6320::Graphics::LoadObjects()
 	s_debugMenuCheckBox->LoadDebugCheckBox();
 	s_debugMenuSlider->LoadDebugSlider();
 	s_debugMenuButton->LoadDebugButton();
+	s_toggleFPSCheckBox->LoadDebugCheckBox();
 #endif
+
+	// Enabling third person camera
+	s_toggleFPSCheckBox->m_isChecked = false;
+
+	// Loading Third person Snowman
+	s_snowmanLine->LoadDebugLine();
+	s_snowman->LoadObject();
+	s_snowman->m_position.x -= 50;
+	s_snowman->m_position.y -= 220;
+	s_snowman->m_position.z -= 300;
+
+	s_camera->m_position = s_snowman->m_position;
+	s_camera->m_position.y += 80;
+	s_camera->m_position.z += 300;
 
 	return true;
 }
@@ -129,10 +153,12 @@ void eae6320::Graphics::Render()
 	// Drawing Transparent list
 	//
 
+
 	// Drawing Debug Shapes
 #ifdef _DEBUG
 	s_debugLine1.DrawLine();
 	s_debugLine2.DrawLine();
+	s_snowmanLine->DrawLine();
 	s_debugBox1.DrawBox();
 	s_debugBox2.DrawBox();
 
@@ -152,6 +178,9 @@ void eae6320::Graphics::Render()
 	//s_logo.Draw();
 	s_numbers->Draw();
 
+	// Drawing third person snowman
+	s_snowman->DrawObject();
+
 	// Drawing Debug Menu Items
 #ifdef _DEBUG
 	if (s_debugMenuEnabled)
@@ -166,6 +195,7 @@ void eae6320::Graphics::Render()
 			s_debugMenuCheckBox->DrawDebugCheckBox(0);
 			s_debugMenuSlider->DrawDebugSlider(0);
 			s_debugMenuButton->DrawDebugButton(0);
+			s_toggleFPSCheckBox->DrawDebugCheckBox(0);
 			break;
 
 		case DebugMenuSelection::CheckBox:
@@ -173,6 +203,7 @@ void eae6320::Graphics::Render()
 			s_debugMenuCheckBox->DrawDebugCheckBox(255);
 			s_debugMenuSlider->DrawDebugSlider(0);
 			s_debugMenuButton->DrawDebugButton(0);
+			s_toggleFPSCheckBox->DrawDebugCheckBox(0);
 			break;
 
 		case DebugMenuSelection::Slider:
@@ -180,6 +211,7 @@ void eae6320::Graphics::Render()
 			s_debugMenuCheckBox->DrawDebugCheckBox(0);
 			s_debugMenuSlider->DrawDebugSlider(255);
 			s_debugMenuButton->DrawDebugButton(0);
+			s_toggleFPSCheckBox->DrawDebugCheckBox(0);
 			break;
 
 		case DebugMenuSelection::Button:
@@ -187,6 +219,15 @@ void eae6320::Graphics::Render()
 			s_debugMenuCheckBox->DrawDebugCheckBox(0);
 			s_debugMenuSlider->DrawDebugSlider(0);
 			s_debugMenuButton->DrawDebugButton(255);
+			s_toggleFPSCheckBox->DrawDebugCheckBox(0);
+			break;
+
+		case DebugMenuSelection::ToggleCam:
+			s_debugMenuTextFPS.DrawDebugText(0);
+			s_debugMenuCheckBox->DrawDebugCheckBox(0);
+			s_debugMenuSlider->DrawDebugSlider(0);
+			s_debugMenuButton->DrawDebugButton(0);
+			s_toggleFPSCheckBox->DrawDebugCheckBox(255);
 			break;
 
 		default:

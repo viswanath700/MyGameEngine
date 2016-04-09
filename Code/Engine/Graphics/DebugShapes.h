@@ -41,11 +41,12 @@ namespace eae6320
 		};
 
 		class DebugLine {
-
+		public:
 			Math::cVector m_startPoint;
 			Math::cVector m_endPoint;
+		private:
 			Math::cVector m_color;
-			LPDIRECT3DVERTEXBUFFER9 m_vBuffer;
+			LPDIRECT3DVERTEXBUFFER9 m_vBuffer; 
 
 		public:
 			DebugLine() {};

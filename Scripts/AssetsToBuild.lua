@@ -18,6 +18,7 @@ return
 			"railing",
 			"cylinder1",
 			"cylinder2",
+			"snowman",
 		},
 		dependencies =
 		{
@@ -90,6 +91,7 @@ return
 			"railing",
 			"cylinder1",
 			"cylinder2",
+			"snowman",
 		},
 		dependencies =
 		{
