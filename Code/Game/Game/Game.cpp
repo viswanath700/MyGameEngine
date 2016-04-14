@@ -97,43 +97,36 @@ namespace Game
 		}
 		else
 		{
-			eae6320::Math::cMatrix_transformation localToWorldTransformCamera = eae6320::Math::cMatrix_transformation(
+			/*eae6320::Math::cMatrix_transformation localToWorldTransformCamera = eae6320::Math::cMatrix_transformation(
 				eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_camera->m_position);
-			eae6320::Graphics::s_camera->m_position = eae6320::Math::cMatrix_transformation::matrixMulVector(localToWorldTransformCamera, eae6320::Math::cVector(0, 0, -300));
-			eae6320::Graphics::s_camera->UpdateOrientation(rotationOffset); 
-			localToWorldTransformCamera = eae6320::Math::cMatrix_transformation(eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_camera->m_position);
-			eae6320::Graphics::s_camera->m_position = eae6320::Math::cMatrix_transformation::matrixMulVector(localToWorldTransformCamera, eae6320::Math::cVector(0, 0, 300));
+			eae6320::Graphics::s_camera->m_position = eae6320::Math::cMatrix_transformation::matrixMulVector(localToWorldTransformCamera, eae6320::Math::cVector(0, 0, -300));*/
+			//eae6320::Graphics::s_camera->UpdateOrientation(rotationOffset);
+			//localToWorldTransformCamera = eae6320::Math::cMatrix_transformation(eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_camera->m_position);
+			//eae6320::Graphics::s_camera->m_position = eae6320::Math::cMatrix_transformation::matrixMulVector(localToWorldTransformCamera, eae6320::Math::cVector(0, 0, 300));
 
+			eae6320::Graphics::s_camera->m_orientation = eae6320::Graphics::s_snowman->m_orientaion *
+				eae6320::Math::cQuaternion(rotationOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
+
+			// Updating player's position
 			eae6320::Math::cVector oldSnowmanPos = eae6320::Graphics::s_snowman->m_position;
 			offset.y = 0.0f;
-
-			eae6320::Graphics::s_camera->UpdatePosition(thirdPersonCamOffset);
-
-			//eae6320::Math::cMatrix_transformation i_localToWorldTransformCamera = eae6320::Math::cMatrix_transformation(
-			//	eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_camera->m_position);
-			//eae6320::Math::cVector cameraPos = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformCamera, eae6320::Math::cVector());
-
 			eae6320::Math::cMatrix_transformation i_localToWorldTransformSnowman = eae6320::Math::cMatrix_transformation(
 				eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_snowman->m_position);
 			eae6320::Math::cVector newSnowmanPos = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformSnowman, offset);
-
-			eae6320::Graphics::s_snowman->m_position.x = newSnowmanPos.x;
 			eae6320::Graphics::s_snowman->m_position.z = newSnowmanPos.z;
 
-			eae6320::Math::cVector deltaVector = eae6320::Math::cVector(newSnowmanPos.x - eae6320::Graphics::s_camera->m_position.x, 0.0f,
-				newSnowmanPos.z - (eae6320::Graphics::s_camera->m_position.z - 300));
-			eae6320::Math::cMatrix_transformation cameraRotationTransform = eae6320::Math::cMatrix_transformation(
-				eae6320::Graphics::s_camera->m_orientation, eae6320::Math::cVector());
-			cameraRotationTransform.Transpose();
-			eae6320::Math::cVector newDeltaVector = eae6320::Math::cMatrix_transformation::matrixMulVector(cameraRotationTransform, deltaVector);
-
-			float deltaX = abs(newDeltaVector.x);
-			float deltaZ = abs(newDeltaVector.z); 
-
-			if (deltaX > 100 || deltaZ > 100)
-				eae6320::Graphics::s_camera->UpdatePosition(offset);
+			// Updating third person camera according to the player's position
+			eae6320::Math::cMatrix_transformation i_localToWorldTransformCamera = eae6320::Math::cMatrix_transformation(
+				eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_camera->m_position);
+			eae6320::Math::cVector camOffset = eae6320::Graphics::s_snowman->m_position - eae6320::Graphics::s_camera->m_position;
+			eae6320::Math::cVector val = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformCamera, camOffset);
+			eae6320::Graphics::s_camera->m_position += (val - eae6320::Graphics::s_camera->m_position) * eae6320::Time::GetSecondsElapsedThisFrame() * 3;
+			eae6320::Graphics::s_camera->m_position.y += 3;
+			eae6320::Graphics::s_camera->m_position.z += 12;
 
 
+			// Moving camera irrespective of players position
+			//eae6320::Graphics::s_camera->UpdatePosition(thirdPersonCamOffset);
 
 			// Updating debug line for the player
 			oldSnowmanPos.y += 30;
