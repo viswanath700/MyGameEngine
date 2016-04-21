@@ -116,6 +116,7 @@ return
 			"numbers",
 			"checkbox",
 			"button",
+			"earth",
 		},
 		dependencies =
 		{
