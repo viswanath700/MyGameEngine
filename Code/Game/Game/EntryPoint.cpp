@@ -34,10 +34,18 @@ int WINAPI WinMain(
 	char* i_commandLineArguments,
 	int i_initialWindowDisplayState )
 {
+	// Network state of the instance
+	bool isServer = true;
+	if (i_commandLineArguments[1] == 'C' || i_commandLineArguments[1] == 'c')
+		isServer = false;
+	else
+		isServer = true;
+
+
 	// A Windows program doesn't actually need any windows at all
 	// but in most cases there will be a single "main" window
 	// and when it is closed the program will exit
-	const int exitCode = CreateMainWindowAndReturnExitCodeWhenItCloses( i_thisInstanceOfTheProgram, i_initialWindowDisplayState );
+	const int exitCode = CreateMainWindowAndReturnExitCodeWhenItCloses( i_thisInstanceOfTheProgram, i_initialWindowDisplayState, isServer);
 	// Unlike standard C/C++ programs there is no standardized return value
 	// to indicate that the program "succeeded".
 	// Windows itself completely ignores the value that the program returns,

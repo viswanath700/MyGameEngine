@@ -92,6 +92,7 @@ return
 			"cylinder1",
 			"cylinder2",
 			"snowman",
+			"snowmanClient",
 		},
 		dependencies =
 		{
@@ -117,6 +118,7 @@ return
 			"checkbox",
 			"button",
 			"earth",
+			"football",
 		},
 		dependencies =
 		{

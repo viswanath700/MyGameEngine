@@ -11,8 +11,41 @@
 #include "../../Engine/Graphics/DebugShapes.h"
 #include <math.h>
 
+#include <stdio.h>
+#include <string.h>
+#include "RakNet/Source/RakPeerInterface.h"
+#include "RakNet/Source/MessageIdentifiers.h"
+#include "RakNet/Source/BitStream.h"
+#include "RakNet/Source/RakNetTypes.h"
+
+#define MAX_CLIENTS 10
+#define SERVER_PORT 60000
+
+enum GameMessages
+{
+	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
+};
+
+struct NetworkPacket
+{
+	float x, y, z;
+	float m_x, m_y, m_z, m_w;
+	char type;
+};
+
 namespace Game
 {
+	NetworkPacket data;
+	//To handle network messages
+	HDC hDeviceContextHandle;
+	RECT ClientRectangle;
+	PAINTSTRUCT OurPaintStructure;
+
+	RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
+	bool isServer;
+	bool connectionEstablished;
+	RakNet::Packet *packet;
+
 	uint8_t pressedNum = 0;
 	bool tildePressed = false;
 	uint8_t debugMenuSelection = 0;
@@ -20,6 +53,231 @@ namespace Game
 	bool downPressed = false;
 	bool rightPressed = false;
 	bool leftPressed = false;
+
+	void initNetwork()
+	{
+		printf("(C) or (S)erver?\n");
+		//fgets(str, 512, stdin);
+		char str[512];
+		if (!isServer)
+		{
+			RakNet::SocketDescriptor sd;
+			peer->Startup(1, &sd, 1);
+			isServer = false;
+		}
+		else {
+			RakNet::SocketDescriptor sd(SERVER_PORT, 0);
+			peer->Startup(MAX_CLIENTS, &sd, 1);
+			isServer = true;
+		}
+
+		if (isServer)
+		{
+			printf("Starting the server.\n");
+			// We need to let the server accept incoming connections from the clients
+			peer->SetMaximumIncomingConnections(MAX_CLIENTS);
+		}
+		else {
+			printf("Enter server IP or hit enter for 127.0.0.1\n");
+			/*fgets(str,512,stdin);*/
+			strcpy(str, "127.0.0.1");
+
+			/*if (str[0] == 0) {
+			strcpy(str, "127.0.0.1");
+			}*/
+			printf("Starting the client.\n");
+			peer->Connect(str, SERVER_PORT, 0, 0);
+
+		}
+	}
+
+	void updateNetwork()
+	{
+		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
+		{
+			std::string networkMessage;
+
+			switch (packet->data[0])
+			{
+			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
+				networkMessage = "Another Client has disconnected :";
+				break;
+			case ID_REMOTE_CONNECTION_LOST:
+				networkMessage = "Another Client has lost the connection :";
+				printf("Another client has lost the connection.\n");
+				break;
+			case ID_REMOTE_NEW_INCOMING_CONNECTION:
+				printf("Another client has connected.\n");
+				break;
+			case ID_CONNECTION_REQUEST_ACCEPTED:
+			{
+				//Client writes data to be sent to server
+				networkMessage = "Our connection request has been accepted:";
+
+				//DrawText(hDeviceContextHandle, networkMessage.c_str(), -1, &ClientRectangle, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+				// Use a BitStream to write a custom user message
+				// Bitstreams are easier to use than sending casted structures, and handle endian swapping automatically
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+
+				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_position.x);
+				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_position.y);
+				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_position.z);
+
+				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_w);
+				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_x);
+				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_y);
+				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_z);
+				networkMessage = "Sending message from client to server";
+
+				//DrawText(hDeviceContextHandle, networkMessage.c_str(), -1, &ClientRectangle, DT_SINGLELINE | DT_CENTER | DT_VCENTER);		
+				peer->Send(&bsOut, HIGH_PRIORITY, UNRELIABLE, 0, packet->systemAddress, false);
+			}
+			break;
+			case ID_NEW_INCOMING_CONNECTION:
+				networkMessage = "A connection is incoming";
+
+				//DrawText(hDeviceContextHandle, networkMessage.c_str(), -1, &ClientRectangle, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+				printf("A connection is incoming.\n");
+				break;
+			case ID_NO_FREE_INCOMING_CONNECTIONS:
+				printf("The server is full.\n");
+				break;
+			case ID_DISCONNECTION_NOTIFICATION:
+				if (isServer) {
+					printf("A client has disconnected.\n");
+				}
+				else {
+					printf("We have been disconnected.\n");
+				}
+				break;
+			case ID_CONNECTION_LOST:
+				if (isServer) {
+					printf("A client lost the connection.\n");
+				}
+				else {
+					printf("Connection lost.\n");
+				}
+				break;
+
+			case ID_GAME_MESSAGE_1:
+			{
+				//Server reading from client or Client reading from server
+				RakNet::RakString rs;
+				float x, y, z;
+				float m_w, m_x, m_y, m_z;
+				connectionEstablished = true;
+
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				//This will read the camera position of the client, so that we can set the client object's position from here
+				bsIn.Read(x);
+				bsIn.Read(y);
+				bsIn.Read(z);
+
+				bsIn.Read(m_w);
+				bsIn.Read(m_x);
+				bsIn.Read(m_y);
+				bsIn.Read(m_z);
+				bsIn.Read(rs);
+				printf("%s\n", rs.C_String());
+
+				data.x = x; data.y = y; data.z = z;
+				data.m_w = m_w; data.m_x = m_x; data.m_y = m_y; data.m_z = m_z;
+				RakNet::BitStream bsOut;
+				//This will send the current Server/Client 's camera position
+				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+				if (isServer) {
+					bsOut.Write(eae6320::Graphics::s_snowman->m_position.x);
+					bsOut.Write(eae6320::Graphics::s_snowman->m_position.y);
+					bsOut.Write(eae6320::Graphics::s_snowman->m_position.z);
+
+					bsOut.Write(eae6320::Graphics::s_snowman->m_orientaion.m_w);
+					bsOut.Write(eae6320::Graphics::s_snowman->m_orientaion.m_x);
+					bsOut.Write(eae6320::Graphics::s_snowman->m_orientaion.m_y);
+					bsOut.Write(eae6320::Graphics::s_snowman->m_orientaion.m_z);
+
+
+					bsOut.Write("Server to Client");
+					networkMessage = "Sending from server to client";
+
+				}
+				else {
+					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_position.x);
+					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_position.y);
+					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_position.z);
+
+					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_w);
+					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_x);
+					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_y);
+					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_z);
+
+
+					bsOut.Write("Client to Server");
+					networkMessage = "Sending from Client to server";
+
+				}
+
+				//DrawText(hDeviceContextHandle, networkMessage.c_str(), -1, &ClientRectangle, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+				peer->Send(&bsOut, HIGH_PRIORITY, UNRELIABLE, 0, packet->systemAddress, false);
+			}
+			break;
+
+			default:
+				printf("Message with identifier %i has arrived.\n", packet->data[0]);
+				break;
+			}
+		}
+	}
+
+	void destroyNetwork()
+	{
+		RakNet::RakPeerInterface::DestroyInstance(peer);
+
+	}
+
+	void ThirdPersonMovement(eae6320::Graphics::GameObject* player, eae6320::Math::cVector posOffset, eae6320::Math::cVector rotOffset, eae6320::Math::cVector thirdPersonOffset)
+	{
+		// Rotating Player
+		player->m_orientaion = player->m_orientaion *
+			eae6320::Math::cQuaternion(rotOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
+
+		// Updating player's position
+		eae6320::Math::cVector oldSnowmanPos = player->m_position;
+		eae6320::Math::cMatrix_transformation i_localToWorldTransformSnowman = eae6320::Math::cMatrix_transformation(
+			eae6320::Graphics::s_camera->m_orientation, player->m_position);
+		eae6320::Math::cVector newSnowmanPos = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformSnowman, posOffset);
+		player->m_position = newSnowmanPos;
+
+		// Updating third person camera according to the player's position
+		eae6320::Math::cVector camOffset = eae6320::Math::cVector(0, 80, 300);
+		eae6320::Math::cVector val = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformSnowman, camOffset);
+		eae6320::Graphics::s_camera->m_position += (val - eae6320::Graphics::s_camera->m_position) * eae6320::Time::GetSecondsElapsedThisFrame() * 3;
+		eae6320::Graphics::s_camera->m_orientation = player->m_orientaion *
+			eae6320::Math::cQuaternion(rotOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
+
+		// Temporarily moving third person camera left/right
+		eae6320::Math::cMatrix_transformation i_localToWorldTransformCamera = eae6320::Math::cMatrix_transformation(
+			eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_camera->m_position);
+		eae6320::Graphics::s_camera->m_position = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformCamera, thirdPersonOffset);
+
+		// Updating debug line for the player
+		oldSnowmanPos.y += 35;
+		newSnowmanPos.y = oldSnowmanPos.y;
+		if (!(newSnowmanPos == oldSnowmanPos))
+		{
+			eae6320::Math::cVector directionVector = (newSnowmanPos - oldSnowmanPos);
+			directionVector.Normalize();
+			eae6320::Graphics::s_snowmanLine->m_startPoint = newSnowmanPos;
+			eae6320::Graphics::s_snowmanLine->m_endPoint = newSnowmanPos + (directionVector * 100);
+			eae6320::Graphics::s_snowmanLine->LoadDebugLine();
+		}
+		else
+		{
+			eae6320::Graphics::s_snowmanLine->m_startPoint = eae6320::Graphics::s_snowmanLine->m_endPoint = oldSnowmanPos;
+			eae6320::Graphics::s_snowmanLine->LoadDebugLine();
+		}
+	}
 
 	// Helper to update renderable position
 	bool UpdateEntities_vector()
@@ -30,6 +288,7 @@ namespace Game
 		eae6320::Math::cVector rotationOffset(0.0f, 0.0f, 0.0f);
 		eae6320::Math::cVector thirdPersonCamOffset(0.0f, 0.0f, 0.0f);
 		{
+			if(isServer)
 			{
 				// Get the direction
 				if (eae6320::UserInput::IsKeyPressed('A'))
@@ -76,6 +335,53 @@ namespace Game
 					thirdPersonCamOffset.x += 5.0f;
 				}
 			}
+			else
+			{
+				if (eae6320::UserInput::IsKeyPressed('J'))
+				{
+					offset.x -= 1.0f;
+				}
+				if (eae6320::UserInput::IsKeyPressed('L'))
+				{
+					offset.x += 1.0f;
+				}
+				if (eae6320::UserInput::IsKeyPressed('I'))
+				{
+					offset.z -= 1.0f;
+				}
+				if (eae6320::UserInput::IsKeyPressed('K'))
+				{
+					offset.z += 1.0f;
+				}
+				if (eae6320::UserInput::IsKeyPressed(VK_UP))
+				{
+					offset.y += 1.0f;
+				}
+				if (eae6320::UserInput::IsKeyPressed(VK_DOWN))
+				{
+					offset.y -= 1.0f;
+				}
+
+				// Get rotation
+				if (eae6320::UserInput::IsKeyPressed(VK_LEFT))
+				{
+					rotationOffset.y -= 0.3f;
+				}
+				if (eae6320::UserInput::IsKeyPressed(VK_RIGHT))
+				{
+					rotationOffset.y += 0.3f;
+				}
+
+				if (eae6320::UserInput::IsKeyPressed('N'))
+				{
+					thirdPersonCamOffset.x -= 5.0f;
+				}
+				if (eae6320::UserInput::IsKeyPressed('M'))
+				{
+					thirdPersonCamOffset.x += 5.0f;
+				}
+			}
+
 			// Get the speed
 			const float unitsPerSecond = 300.0f;	// This is arbitrary
 			const float unitsToMove = unitsPerSecond * eae6320::Time::GetSecondsElapsedThisFrame();	// This makes the speed frame-rate-independent
@@ -95,51 +401,42 @@ namespace Game
 			// You just need a way to update the position offset associated with the colorful rectangle.
 			eae6320::Graphics::s_camera->UpdatePosition(offset);
 		}
-		else
+		else // Third person camera movement
 		{
 			rotationOffset.y = offset.x / 300.0f;
 			offset.x = 0;
 			offset.y = 0;
 
-			// Rotating Player
-			eae6320::Graphics::s_snowman->m_orientaion = eae6320::Graphics::s_snowman->m_orientaion *
-				eae6320::Math::cQuaternion(rotationOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
+			//ThirdPersonMovement(eae6320::Graphics::s_snowman, offset, rotationOffset, thirdPersonCamOffset);
 
-			// Updating player's position
-			eae6320::Math::cVector oldSnowmanPos = eae6320::Graphics::s_snowman->m_position;
-			eae6320::Math::cMatrix_transformation i_localToWorldTransformSnowman = eae6320::Math::cMatrix_transformation(
-				eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_snowman->m_position);
-			eae6320::Math::cVector newSnowmanPos = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformSnowman, offset);
-			eae6320::Graphics::s_snowman->m_position = newSnowmanPos;
-
-			// Updating third person camera according to the player's position
-			eae6320::Math::cVector camOffset = eae6320::Math::cVector(0, 80, 300);
-			eae6320::Math::cVector val = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformSnowman, camOffset);
-			eae6320::Graphics::s_camera->m_position += (val - eae6320::Graphics::s_camera->m_position) * eae6320::Time::GetSecondsElapsedThisFrame() * 3;
-			eae6320::Graphics::s_camera->m_orientation = eae6320::Graphics::s_snowman->m_orientaion *
-				eae6320::Math::cQuaternion(rotationOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
-
-			// Temporarily moving third person camera left/right
-			eae6320::Math::cMatrix_transformation i_localToWorldTransformCamera = eae6320::Math::cMatrix_transformation(
-				eae6320::Graphics::s_camera->m_orientation, eae6320::Graphics::s_camera->m_position);
-			eae6320::Graphics::s_camera->m_position = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformCamera, thirdPersonCamOffset);
-
-			// Updating debug line for the player
-			oldSnowmanPos.y += 35;
-			newSnowmanPos.y = oldSnowmanPos.y;
-			if (!(newSnowmanPos == oldSnowmanPos))
+			if (isServer && connectionEstablished)
 			{
-				eae6320::Math::cVector directionVector = (newSnowmanPos - oldSnowmanPos);
-				directionVector.Normalize();
-				eae6320::Graphics::s_snowmanLine->m_startPoint = newSnowmanPos;
-				eae6320::Graphics::s_snowmanLine->m_endPoint = newSnowmanPos + (directionVector * 100);
-				eae6320::Graphics::s_snowmanLine->LoadDebugLine();
+				//I am server
+				eae6320::Graphics::s_snowmanClient->m_position.x = data.x;
+				eae6320::Graphics::s_snowmanClient->m_position.y = data.y;
+				eae6320::Graphics::s_snowmanClient->m_position.z = data.z;
+
+				eae6320::Graphics::s_snowmanClient->m_orientaion.m_w = data.m_w;
+				eae6320::Graphics::s_snowmanClient->m_orientaion.m_x = data.m_x;
+				eae6320::Graphics::s_snowmanClient->m_orientaion.m_y = data.m_y;
+				eae6320::Graphics::s_snowmanClient->m_orientaion.m_z = data.m_z;
 			}
+			else if (!isServer && connectionEstablished) {
+				//I am client
+				eae6320::Graphics::s_snowman->m_position.x = data.x;
+				eae6320::Graphics::s_snowman->m_position.y = data.y;
+				eae6320::Graphics::s_snowman->m_position.z = data.z;
+
+				eae6320::Graphics::s_snowman->m_orientaion.m_w = data.m_w;
+				eae6320::Graphics::s_snowman->m_orientaion.m_x = data.m_x;
+				eae6320::Graphics::s_snowman->m_orientaion.m_y = data.m_y;
+				eae6320::Graphics::s_snowman->m_orientaion.m_z = data.m_z;
+			}
+
+			if(isServer)
+				ThirdPersonMovement(eae6320::Graphics::s_snowman, offset, rotationOffset, thirdPersonCamOffset);
 			else
-			{
-				eae6320::Graphics::s_snowmanLine->m_startPoint = eae6320::Graphics::s_snowmanLine->m_endPoint = oldSnowmanPos;
-				eae6320::Graphics::s_snowmanLine->LoadDebugLine();
-			}
+				ThirdPersonMovement(eae6320::Graphics::s_snowmanClient, offset, rotationOffset, thirdPersonCamOffset);
 		}
 		
 		return !wereThereErrors;
@@ -353,7 +650,11 @@ namespace Game
 			leftPressed = false;
 	}
 
-	bool Initialize(const HWND i_renderingWindow) {
+	bool Initialize(const HWND i_renderingWindow, bool serverState)
+	{
+		isServer = serverState;
+		initNetwork();
+
 		return eae6320::Graphics::Initialize(i_renderingWindow);
 	}
 
@@ -372,6 +673,7 @@ namespace Game
 			DebugMenuNavigation();
 		}
 
+		updateNetwork();
 		eae6320::Graphics::Render();
 	}
 

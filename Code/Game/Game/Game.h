@@ -15,7 +15,7 @@ This file contains the function declarations for Game
 
 namespace Game
 {
-	bool Initialize(const HWND i_renderingWindow);
+	bool Initialize(const HWND i_renderingWindow, bool serverState);
 	void Run();
 	bool ShutDown();
 }

@@ -53,7 +53,7 @@ namespace eae6320
 			// Data
 			//=====
 
-		private:
+		public:
 
 			float m_w, m_x, m_y, m_z;
 

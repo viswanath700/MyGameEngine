@@ -15,7 +15,7 @@
 // Main Function
 //==============
 
-int CreateMainWindowAndReturnExitCodeWhenItCloses( const HINSTANCE i_thisInstanceOfTheProgram, const int i_initialWindowDisplayState );
+int CreateMainWindowAndReturnExitCodeWhenItCloses( const HINSTANCE i_thisInstanceOfTheProgram, const int i_initialWindowDisplayState, bool isServer );
 
 // Helper Functions
 //=================

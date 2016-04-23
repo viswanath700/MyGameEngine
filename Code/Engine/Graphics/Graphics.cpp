@@ -22,6 +22,7 @@ eae6320::Graphics::GameObject* eae6320::Graphics::s_debugCylinder1 = NULL;
 eae6320::Graphics::GameObject* eae6320::Graphics::s_debugCylinder2 = NULL;
 
 eae6320::Graphics::GameObject* eae6320::Graphics::s_snowman = NULL;
+eae6320::Graphics::GameObject* eae6320::Graphics::s_snowmanClient = NULL;
 eae6320::Graphics::DebugLine* eae6320::Graphics::s_snowmanLine = NULL;
 
 eae6320::Graphics::DebugLine s_debugLine1;
@@ -42,6 +43,7 @@ eae6320::Graphics::DebugMenuButton* eae6320::Graphics::s_debugMenuButton = NULL;
 eae6320::Graphics::DebugMenuCheckBox* eae6320::Graphics::s_toggleFPSCheckBox = NULL;
 
 bool eae6320::Graphics::s_debugMenuEnabled = false;
+bool eae6320::Graphics::s_isClient = false;
 
 bool eae6320::Graphics::LoadObjects()
 {
@@ -72,6 +74,7 @@ bool eae6320::Graphics::LoadObjects()
 
 	// Third person snowman
 	s_snowman = new GameObject("data/snowman.binMesh", "data/snowman.binMaterial");
+	s_snowmanClient = new GameObject("data/snowman.binMesh", "data/snowmanClient.binMaterial");
 	s_snowmanLine = new eae6320::Graphics::DebugLine(Math::cVector(100.0f, 0.0f, 0.0f), Math::cVector(75.0f, -50.0f, -50.0f), Math::cVector(0.0f, 0.0f, 1.0f));
 
 #ifdef _DEBUG
@@ -129,9 +132,10 @@ bool eae6320::Graphics::LoadObjects()
 	s_snowman->m_position.y -= 220;
 	s_snowman->m_position.z -= 300;
 
-	s_camera->m_position = s_snowman->m_position;
-	s_camera->m_position.y += 80;
-	s_camera->m_position.z += 300;
+	s_snowmanClient->LoadObject();
+	s_snowmanClient->m_position.x -= 50;
+	s_snowmanClient->m_position.y -= 220;
+	s_snowmanClient->m_position.z -= 0;
 
 	return true;
 }
@@ -180,6 +184,7 @@ void eae6320::Graphics::Render()
 
 	// Drawing third person snowman
 	s_snowman->DrawObject();
+	s_snowmanClient->DrawObject();
 
 	// Drawing Debug Menu Items
 #ifdef _DEBUG

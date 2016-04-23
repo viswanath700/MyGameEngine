@@ -40,13 +40,13 @@ namespace
 // Main Function
 //==============
 
-int CreateMainWindowAndReturnExitCodeWhenItCloses( const HINSTANCE i_thisInstanceOfTheProgram, const int i_initialWindowDisplayState )
+int CreateMainWindowAndReturnExitCodeWhenItCloses( const HINSTANCE i_thisInstanceOfTheProgram, const int i_initialWindowDisplayState, bool isServer)
 {
 	// Try to create the main window
 	if ( CreateMainWindow( i_thisInstanceOfTheProgram, i_initialWindowDisplayState ) )
 	{
 		// main window was successful, initialize Game
-		if(!Game::Initialize(s_mainWindow))
+		if(!Game::Initialize(s_mainWindow, isServer))
 		{
 			return -1;
 		}
