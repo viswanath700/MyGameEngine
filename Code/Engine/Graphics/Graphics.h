@@ -14,6 +14,7 @@
 #include "../Windows/WindowsIncludes.h"
 #include "DebugMenu.h"
 #include "DebugShapes.h"
+#include "CollisionDetection.h"
 
 #ifdef EAE6320_PLATFORM_D3D
 #include <d3d9.h>
@@ -43,6 +44,7 @@ namespace eae6320
 		extern GameObject* s_snowman;
 		extern GameObject* s_snowmanClient;
 		extern DebugLine* s_snowmanLine;
+		extern CollisionDetection* s_collisionDet;
 
 		extern GameSprite* s_numbers;
 

@@ -124,10 +124,10 @@ namespace Game
 				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_position.y);
 				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_position.z);
 
-				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_w);
-				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_x);
-				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_y);
-				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_z);
+				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_w);
+				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_x);
+				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_y);
+				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_z);
 				networkMessage = "Sending message from client to server";
 
 				//DrawText(hDeviceContextHandle, networkMessage.c_str(), -1, &ClientRectangle, DT_SINGLELINE | DT_CENTER | DT_VCENTER);		
@@ -192,10 +192,10 @@ namespace Game
 					bsOut.Write(eae6320::Graphics::s_snowman->m_position.y);
 					bsOut.Write(eae6320::Graphics::s_snowman->m_position.z);
 
-					bsOut.Write(eae6320::Graphics::s_snowman->m_orientaion.m_w);
-					bsOut.Write(eae6320::Graphics::s_snowman->m_orientaion.m_x);
-					bsOut.Write(eae6320::Graphics::s_snowman->m_orientaion.m_y);
-					bsOut.Write(eae6320::Graphics::s_snowman->m_orientaion.m_z);
+					bsOut.Write(eae6320::Graphics::s_snowman->m_orientation.m_w);
+					bsOut.Write(eae6320::Graphics::s_snowman->m_orientation.m_x);
+					bsOut.Write(eae6320::Graphics::s_snowman->m_orientation.m_y);
+					bsOut.Write(eae6320::Graphics::s_snowman->m_orientation.m_z);
 
 
 					bsOut.Write("Server to Client");
@@ -207,10 +207,10 @@ namespace Game
 					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_position.y);
 					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_position.z);
 
-					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_w);
-					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_x);
-					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_y);
-					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientaion.m_z);
+					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_w);
+					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_x);
+					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_y);
+					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_z);
 
 
 					bsOut.Write("Client to Server");
@@ -239,7 +239,7 @@ namespace Game
 	void ThirdPersonMovement(eae6320::Graphics::GameObject* player, eae6320::Math::cVector posOffset, eae6320::Math::cVector rotOffset, eae6320::Math::cVector thirdPersonOffset)
 	{
 		// Rotating Player
-		player->m_orientaion = player->m_orientaion *
+		player->m_orientation = player->m_orientation *
 			eae6320::Math::cQuaternion(rotOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
 
 		// Updating player's position
@@ -250,10 +250,10 @@ namespace Game
 		player->m_position = newSnowmanPos;
 
 		// Updating third person camera according to the player's position
-		eae6320::Math::cVector camOffset = eae6320::Math::cVector(0, 80, 300);
+		eae6320::Math::cVector camOffset = eae6320::Graphics::s_camera->m_offsetFromPlayer;
 		eae6320::Math::cVector val = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformSnowman, camOffset);
 		eae6320::Graphics::s_camera->m_position += (val - eae6320::Graphics::s_camera->m_position) * eae6320::Time::GetSecondsElapsedThisFrame() * 3;
-		eae6320::Graphics::s_camera->m_orientation = player->m_orientaion *
+		eae6320::Graphics::s_camera->m_orientation = player->m_orientation *
 			eae6320::Math::cQuaternion(rotOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
 
 		// Temporarily moving third person camera left/right
@@ -416,10 +416,10 @@ namespace Game
 				eae6320::Graphics::s_snowmanClient->m_position.y = data.y;
 				eae6320::Graphics::s_snowmanClient->m_position.z = data.z;
 
-				eae6320::Graphics::s_snowmanClient->m_orientaion.m_w = data.m_w;
-				eae6320::Graphics::s_snowmanClient->m_orientaion.m_x = data.m_x;
-				eae6320::Graphics::s_snowmanClient->m_orientaion.m_y = data.m_y;
-				eae6320::Graphics::s_snowmanClient->m_orientaion.m_z = data.m_z;
+				eae6320::Graphics::s_snowmanClient->m_orientation.m_w = data.m_w;
+				eae6320::Graphics::s_snowmanClient->m_orientation.m_x = data.m_x;
+				eae6320::Graphics::s_snowmanClient->m_orientation.m_y = data.m_y;
+				eae6320::Graphics::s_snowmanClient->m_orientation.m_z = data.m_z;
 			}
 			else if (!isServer && connectionEstablished) {
 				//I am client
@@ -427,10 +427,10 @@ namespace Game
 				eae6320::Graphics::s_snowman->m_position.y = data.y;
 				eae6320::Graphics::s_snowman->m_position.z = data.z;
 
-				eae6320::Graphics::s_snowman->m_orientaion.m_w = data.m_w;
-				eae6320::Graphics::s_snowman->m_orientaion.m_x = data.m_x;
-				eae6320::Graphics::s_snowman->m_orientaion.m_y = data.m_y;
-				eae6320::Graphics::s_snowman->m_orientaion.m_z = data.m_z;
+				eae6320::Graphics::s_snowman->m_orientation.m_w = data.m_w;
+				eae6320::Graphics::s_snowman->m_orientation.m_x = data.m_x;
+				eae6320::Graphics::s_snowman->m_orientation.m_y = data.m_y;
+				eae6320::Graphics::s_snowman->m_orientation.m_z = data.m_z;
 			}
 
 			if(isServer)

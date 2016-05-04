@@ -21,12 +21,21 @@ namespace eae6320
 	{
 		class GameObject
 		{
+		private:
+			struct BoxCollider
+			{
+				Math::cVector sExtends;
+			};
 
 		public:
 			Graphics::Mesh m_mesh;
 			Graphics::Material m_material;
+
 			Math::cVector m_position;
-			Math::cQuaternion m_orientaion;
+			Math::cQuaternion m_orientation;
+			BoxCollider m_collider;
+			Math::cVector m_velocity;
+
 			float m_alpha;
 			float m_boundingSphereRadus;
 

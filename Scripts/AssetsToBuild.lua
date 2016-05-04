@@ -19,6 +19,7 @@ return
 			"cylinder1",
 			"cylinder2",
 			"snowman",
+			"collisionData",
 		},
 		dependencies =
 		{

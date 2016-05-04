@@ -206,6 +206,10 @@ bool eae6320::cMeshBuilder::LoadTableValues_vertices_values(lua_State& io_luaSta
 			{
 				return false;
 			}
+			if (!LoadTableValues_vertices_values_normal(io_luaState, i - 1))
+			{
+				return false;
+			}
 			if (!LoadTableValues_vertices_values_color(io_luaState, i - 1))
 			{
 				return false;
@@ -258,6 +262,51 @@ bool eae6320::cMeshBuilder::LoadTableValues_vertices_values_position(lua_State& 
 		lua_pushinteger(&io_luaState, 3);
 		lua_gettable(&io_luaState, -2);
 		m_vertexData[i_vertexIndex].z = (float)lua_tonumber(&io_luaState, -1);
+		lua_pop(&io_luaState, 1);
+	}
+	else
+	{
+		wereThereErrors = true;
+		std::stringstream errorMessage;
+		errorMessage << "The value at \"" << key << "\" must be a table "
+			"(instead of a " << luaL_typename(&io_luaState, -1) << ")\n";
+		eae6320::OutputErrorMessage(errorMessage.str().c_str());
+		goto OnExit;
+	}
+
+OnExit:
+
+	// Pop the parameters table
+	lua_pop(&io_luaState, 1);
+
+	return !wereThereErrors;
+}
+
+bool eae6320::cMeshBuilder::LoadTableValues_vertices_values_normal(lua_State& io_luaState, int i_vertexIndex)
+{
+	bool wereThereErrors = false;
+
+	const char* const key = "normal";
+	lua_pushstring(&io_luaState, key);
+	lua_gettable(&io_luaState, -2);
+	if (lua_istable(&io_luaState, -1))
+	{
+		// nx
+		lua_pushinteger(&io_luaState, 1);
+		lua_gettable(&io_luaState, -2);
+		m_vertexData[i_vertexIndex].nx = (float)lua_tonumber(&io_luaState, -1);
+		lua_pop(&io_luaState, 1);
+
+		// ny
+		lua_pushinteger(&io_luaState, 2);
+		lua_gettable(&io_luaState, -2);
+		m_vertexData[i_vertexIndex].ny = (float)lua_tonumber(&io_luaState, -1);
+		lua_pop(&io_luaState, 1);
+
+		// nz
+		lua_pushinteger(&io_luaState, 3);
+		lua_gettable(&io_luaState, -2);
+		m_vertexData[i_vertexIndex].nz = (float)lua_tonumber(&io_luaState, -1);
 		lua_pop(&io_luaState, 1);
 	}
 	else

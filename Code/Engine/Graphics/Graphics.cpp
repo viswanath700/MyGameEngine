@@ -24,6 +24,7 @@ eae6320::Graphics::GameObject* eae6320::Graphics::s_debugCylinder2 = NULL;
 eae6320::Graphics::GameObject* eae6320::Graphics::s_snowman = NULL;
 eae6320::Graphics::GameObject* eae6320::Graphics::s_snowmanClient = NULL;
 eae6320::Graphics::DebugLine* eae6320::Graphics::s_snowmanLine = NULL;
+eae6320::Graphics::CollisionDetection* eae6320::Graphics::s_collisionDet = NULL;
 
 eae6320::Graphics::DebugLine s_debugLine1;
 eae6320::Graphics::DebugLine s_debugLine2;
@@ -44,6 +45,9 @@ eae6320::Graphics::DebugMenuCheckBox* eae6320::Graphics::s_toggleFPSCheckBox = N
 
 bool eae6320::Graphics::s_debugMenuEnabled = false;
 bool eae6320::Graphics::s_isClient = false;
+
+eae6320::Math::cVector s_playerPrevPos;
+eae6320::Math::cVector s_camPrevPos;
 
 bool eae6320::Graphics::LoadObjects()
 {
@@ -76,6 +80,7 @@ bool eae6320::Graphics::LoadObjects()
 	s_snowman = new GameObject("data/snowman.binMesh", "data/snowman.binMaterial");
 	s_snowmanClient = new GameObject("data/snowman.binMesh", "data/snowmanClient.binMaterial");
 	s_snowmanLine = new eae6320::Graphics::DebugLine(Math::cVector(100.0f, 0.0f, 0.0f), Math::cVector(75.0f, -50.0f, -50.0f), Math::cVector(0.0f, 0.0f, 1.0f));
+	s_collisionDet = new eae6320::Graphics::CollisionDetection();
 
 #ifdef _DEBUG
 	// Debug Menu Stuff
@@ -137,6 +142,8 @@ bool eae6320::Graphics::LoadObjects()
 	s_snowmanClient->m_position.y -= 220;
 	s_snowmanClient->m_position.z -= 0;
 
+	s_collisionDet->LoadCollisionData("data/CollisionData.binmesh");
+
 	return true;
 }
 
@@ -184,7 +191,24 @@ void eae6320::Graphics::Render()
 
 	// Drawing third person snowman
 	s_snowman->DrawObject();
-	s_snowmanClient->DrawObject();
+	//s_snowmanClient->DrawObject();
+
+	// COllision Detection
+	{
+		s_snowman->m_velocity = s_snowman->m_position - s_playerPrevPos;
+		s_snowman->m_position = s_collisionDet->CollideWithWorld(s_snowman->m_position, s_snowman->m_velocity, 50, false);
+		s_snowman->m_velocity = Math::cVector(0, -9.8f, 0) * 5;
+		s_snowman->m_position = s_collisionDet->CollideWithWorld(s_snowman->m_position, s_snowman->m_velocity, 20, false);
+		s_playerPrevPos = s_snowman->m_position;
+
+		Math::cVector playerDir = s_snowman->m_position - s_camera->m_position;
+		Math::cMatrix_transformation mat = Math::cMatrix_transformation::cMatrix_transformation(s_snowman->m_orientation, s_snowman->m_position);
+		Math::cVector offset = Math::cMatrix_transformation::matrixMulVector(mat, Math::cVector(0, 120, 200));
+		Math::cVector rayOrigin = offset;
+		s_collisionDet->CollideWithWorld(rayOrigin, playerDir, playerDir.GetLength(), true);
+	}
+
+
 
 	// Drawing Debug Menu Items
 #ifdef _DEBUG

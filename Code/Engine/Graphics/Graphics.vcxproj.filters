@@ -11,6 +11,7 @@
     <ClInclude Include="DebugShapes.h" />
     <ClInclude Include="GameSprite.h" />
     <ClInclude Include="DebugMenu.h" />
+    <ClInclude Include="CollisionDetection.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Direct3D">
@@ -58,5 +59,6 @@
     <ClCompile Include="Direct3D\DebugMenu.d3d.cpp">
       <Filter>Direct3D</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionDetection.cpp" />
   </ItemGroup>
 </Project>

@@ -9,6 +9,7 @@ This file contains the function declarations for Mesh
 //=============
 
 #include <cstdint>
+#include <vector>
 
 #ifdef EAE6320_PLATFORM_D3D
 #include <d3d9.h>
@@ -39,6 +40,10 @@ namespace eae6320
 				// 3 floats == 12 bytes
 				// Offset = 0
 				float x, y, z;
+
+				// Normals
+				float nx, ny, nz;
+
 				// COLOR0
 				// 4 uint8_ts == 4 bytes
 				// Offset = 12
@@ -63,6 +68,10 @@ namespace eae6320
 				// 3 floats == 12 bytes
 				// Offset = 0
 				float x, y, z;
+
+				// Normals
+				float nx, ny, nz;
+
 				// COLOR0
 				// 4 uint8_ts == 4 bytes
 				// Offset = 12

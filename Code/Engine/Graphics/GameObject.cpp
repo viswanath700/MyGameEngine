@@ -11,8 +11,11 @@ eae6320::Graphics::GameObject::GameObject(char* const i_path_mesh, char* const i
 {
 	m_mesh = Mesh(i_path_mesh);
 	m_material = Material(i_path_material);
+
 	m_position = Math::cVector();
-	m_orientaion = Math::cQuaternion();
+	m_orientation = Math::cQuaternion();
+	m_velocity = Math::cVector(0, 0, 0);
+	m_collider.sExtends = Math::cVector(0, 0, 0);
 
 	m_alpha = 1.0;
 }
@@ -35,7 +38,7 @@ void eae6320::Graphics::GameObject::DrawObject()
 {
 	m_material.SetMaterial();
 	m_material.SetMaterialUniforms();
-	m_material.SetEngineUniforms(Math::cMatrix_transformation(m_orientaion, m_position), *eae6320::Graphics::s_camera);
+	m_material.SetEngineUniforms(Math::cMatrix_transformation(m_orientation, m_position), *eae6320::Graphics::s_camera);
 
 	m_mesh.DrawMesh();
 }

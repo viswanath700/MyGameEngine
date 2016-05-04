@@ -34,6 +34,7 @@ namespace eae6320
 		struct sVertex
 		{
 			float x, y, z;
+			float nx, ny, nz;
 			uint8_t b, g, r, a;
 			float u, v;
 		};
@@ -43,6 +44,7 @@ namespace eae6320
 		struct sVertex
 		{
 			float x, y, z;
+			float nx, ny, nz;
 			uint8_t r, g, b, a;
 			float u, v;
 		};
@@ -60,6 +62,7 @@ namespace eae6320
 		bool LoadTableValues_vertices(lua_State& io_luaState);
 		bool LoadTableValues_vertices_values(lua_State& io_luaState);
 		bool LoadTableValues_vertices_values_position(lua_State& io_luaState, int i_vertexIndex);
+		bool LoadTableValues_vertices_values_normal(lua_State& io_luaState, int i_vertexIndex);
 		bool LoadTableValues_vertices_values_color(lua_State& io_luaState, int i_vertexIndex);
 		bool LoadTableValues_vertices_values_texture(lua_State& io_luaState, int i_vertexIndex);
 		bool LoadTableValues_indices(lua_State& io_luaState);

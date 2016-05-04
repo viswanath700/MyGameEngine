@@ -23,7 +23,10 @@ namespace eae6320
 
 		public:
 			Math::cVector m_position;
+			Math::cVector m_velocity;
 			Math::cQuaternion m_orientation;
+			Math::cVector m_offsetFromPlayer;
+
 			float m_fieldOfView_y;
 			float m_aspectRatio;
 			float m_z_nearPlane;
@@ -32,7 +35,9 @@ namespace eae6320
 		public:
 			CameraObject() :
 				m_position(Math::cVector(0, 0, 100)),
+				m_velocity(Math::cVector(0, 0, 0)),
 				m_orientation(Math::cQuaternion()),
+				m_offsetFromPlayer(Math::cVector(0, 80, 300)),
 				m_fieldOfView_y(Math::ConvertDegreesToRadians(60)),
 				m_aspectRatio((float)800 / 600),
 				m_z_nearPlane(0.1f),
