@@ -501,6 +501,7 @@
     <ClInclude Include="RakNet\Source\XBox360Includes.h">
       <Filter>RakNet</Filter>
     </ClInclude>
+    <ClInclude Include="AudioControl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp" />
@@ -839,6 +840,7 @@
     <ClCompile Include="RakNet\Source\WSAStartupSingleton.cpp">
       <Filter>RakNet</Filter>
     </ClCompile>
+    <ClCompile Include="AudioControl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="RakNet\Source\CMakeLists.txt">

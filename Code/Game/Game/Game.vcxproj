@@ -127,7 +127,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Graphics.lib;Time.lib;Math.lib;UserInput.lib;%(AdditionalDependencies);ws2_32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Graphics.lib;Time.lib;Math.lib;UserInput.lib;%(AdditionalDependencies);ws2_32.lib;xaudio2.lib</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
       <Command>copy "$(TargetPath)" "$(GameDir)$(TargetFileName)" /y</Command>
@@ -184,7 +184,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Graphics.lib;Time.lib;Math.lib;UserInput.lib;%(AdditionalDependencies);ws2_32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Graphics.lib;Time.lib;Math.lib;UserInput.lib;%(AdditionalDependencies);ws2_32.lib;xaudio2.lib</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
       <Command>copy "$(TargetPath)" "$(GameDir)$(TargetFileName)" /y</Command>
@@ -207,6 +207,7 @@
     <Image Include="Resources\small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioControl.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="RakNet\Source\AutopatcherPatchContext.h" />
     <ClInclude Include="RakNet\Source\AutopatcherRepositoryInterface.h" />
@@ -369,6 +370,7 @@
     <ClInclude Include="Windows\WindowsIncludes.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AudioControl.cpp" />
     <ClCompile Include="EntryPoint.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="RakNet\Source\Base64Encoder.cpp" />

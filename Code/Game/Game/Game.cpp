@@ -18,6 +18,8 @@
 #include "RakNet/Source/BitStream.h"
 #include "RakNet/Source/RakNetTypes.h"
 
+#include "AudioControl.h"
+
 #define MAX_CLIENTS 10
 #define SERVER_PORT 60000
 
@@ -69,6 +71,16 @@ namespace Game
 	float bulletCollisionOffset;
 	float flagCollisionOffset;
 	float capturePointOffset;
+
+	eae6320::Math::cVector clientPrevPos;
+	bool flagPick = false;
+	bool clientFlagPick = false;
+	bool flagReset = false;
+	bool scoreUp = false;
+	bool clientScoreUp = false;
+	bool groundWalk = false;
+	bool upWalk = false;
+	bool sprint = false;
 
 	void initNetwork()
 	{
@@ -366,6 +378,18 @@ namespace Game
 			&& player->m_position.z < flag->m_position.z + flagCollisionOffset && player->m_position.z > flag->m_position.z - flagCollisionOffset)
 		{
 			capturedFlag = true;
+
+			if (isServer && !flagPick)
+			{
+				eae6320::Audio::PlayAudio(4);
+				flagPick = true;
+			}
+			else if(!clientFlagPick)
+			{
+				//eae6320::Audio::StopAudio(5);
+				eae6320::Audio::PlayAudio(5);
+				clientFlagPick = true;
+			}
 		}
 
 		//attach flag
@@ -382,6 +406,20 @@ namespace Game
 			flag->m_position = flag->m_defaultPosition;
 			score++;
 			gameReset = true;
+
+			if (isServer && !scoreUp)
+			{
+				//eae6320::Audio::StopAudio(7);
+				eae6320::Audio::PlayAudio(7);
+				scoreUp = true;
+			}
+			else if(!clientScoreUp)
+			{
+				//eae6320::Audio::StopAudio(8);
+				eae6320::Audio::PlayAudio(8);
+				clientScoreUp = true;
+			}
+
 			//gameReset = Graphics::dogaObject->Reset();
 		}
 
@@ -393,8 +431,15 @@ namespace Game
 			playerTagged = true;
 			flag->m_position = flag->m_defaultPosition;
 			gameReset = true;
-			//gameReset = Graphics::dogaObject->ResetFlag();
 
+			if (!flagReset)
+			{
+				//eae6320::Audio::StopAudio(6);
+				eae6320::Audio::PlayAudio(6);
+				flagReset = true;
+			}
+
+			//gameReset = Graphics::dogaObject->ResetFlag();
 		}
 
 		if (gameReset)
@@ -402,6 +447,13 @@ namespace Game
 			playerWon = false;
 			capturedFlag = false;
 			playerTagged = false;
+			
+			// Audio Control
+			flagPick = false;
+			clientFlagPick = false;
+			flagReset = false;
+			scoreUp = false;
+			clientScoreUp = false;
 		}
 	}
 
@@ -621,6 +673,73 @@ namespace Game
 		}
 		
 		return !wereThereErrors;
+	}
+
+	void PlayMovementAudio(eae6320::Graphics::GameObject* player)
+	{
+		if (isServer) {
+
+			float length = (eae6320::Graphics::s_snowman->m_position - player->m_position).GetLength();
+			eae6320::Audio::SetVolume(1, length, 400.0f, 100.0f);
+			eae6320::Audio::SetVolume(2, length, 400.0f, 100.0f);
+			eae6320::Audio::SetVolume(3, length, 400.0f, 100.0f);
+
+			clientPrevPos.y = player->m_position.y;
+			if (player->m_position != clientPrevPos)
+			{
+				if (player->m_position.y <= -230.0f)
+				{
+					eae6320::Audio::StopAudio(2);
+					if (eae6320::Graphics::s_sprintBar->barPosition > 0 && eae6320::UserInput::IsKeyPressed(VK_RSHIFT))
+					{
+						eae6320::Audio::StopAudio(1);
+						//if (!sprint) {
+							eae6320::Audio::PlayAudio(3);
+							sprint = true;
+						//}
+					}
+					else
+					{
+						eae6320::Audio::StopAudio(3);
+						//if (!groundWalk) {
+							eae6320::Audio::PlayAudio(1);
+							groundWalk = true;
+						//}
+					}
+				}
+				else
+				{
+					eae6320::Audio::StopAudio(1);
+					if (eae6320::Graphics::s_sprintBar->barPosition > 0 && eae6320::UserInput::IsKeyPressed(VK_RSHIFT))
+					{
+						eae6320::Audio::StopAudio(2);
+						//if (!sprint) {
+							eae6320::Audio::PlayAudio(3);
+							sprint = true;
+						//}
+					}
+					else
+					{
+						eae6320::Audio::StopAudio(3);
+						//if (!upWalk) {
+							eae6320::Audio::PlayAudio(2);
+							upWalk= true;
+						//}
+					}
+				}
+			}
+			else
+			{
+				eae6320::Audio::StopAudio(1);
+				eae6320::Audio::StopAudio(2);
+				eae6320::Audio::StopAudio(3);
+
+				groundWalk = false;
+				upWalk = false;
+				sprint = false;
+			}
+		}
+		clientPrevPos = player->m_position;
 	}
 
 	// Helper to detect shooting based on user input
@@ -847,6 +966,24 @@ namespace Game
 		shootBullet = false;
 		bulletOffsetPos = eae6320::Math::cVector(0, 40, 0);
 
+		// Audio Control
+		eae6320::Audio::Initialize();
+		eae6320::Audio::AddAudioFile("data/sounds/theme.wav", true, 0.05f);
+		eae6320::Audio::AddAudioFile("data/sounds/walkingHard.wav");
+		eae6320::Audio::AddAudioFile("data/sounds/walkingGravel.wav");
+		eae6320::Audio::AddAudioFile("data/sounds/running.wav");
+		eae6320::Audio::AddAudioFile("data/sounds/playerFlagPick.wav");
+		eae6320::Audio::AddAudioFile("data/sounds/enemyFlagPick.wav");
+		eae6320::Audio::AddAudioFile("data/sounds/flagReset.wav");
+		eae6320::Audio::AddAudioFile("data/sounds/playerScore.wav");
+		eae6320::Audio::AddAudioFile("data/sounds/enemyScore.wav");
+		
+		// Playing theme music
+		if(isServer)
+			eae6320::Audio::PlayAudio(0);
+
+		clientPrevPos = eae6320::Math::cVector(-50, -220, 0);
+
 		return eae6320::Graphics::Initialize(i_renderingWindow);
 	}
 
@@ -907,14 +1044,7 @@ namespace Game
 
 		updateNetwork();
 
-		if (isServer)
-		{
-			
-		}
-		else
-		{
-
-		}
+		PlayMovementAudio(eae6320::Graphics::s_snowmanClient);
 
 		eae6320::Graphics::Render();
 	}
