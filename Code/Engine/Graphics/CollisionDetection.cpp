@@ -82,11 +82,11 @@ namespace eae6320
 		{
 			if (coll.foundCollision == true)
 			{
-				Graphics::s_camera->m_offsetFromPlayer = Math::cVector(0, 50, 80);
+				Graphics::s_camera->m_offsetFromPlayer = Math::cVector(0, 50, 50);
 			}
 			else
 			{
-				Graphics::s_camera->m_offsetFromPlayer = Math::cVector(0, 80, 300);
+				Graphics::s_camera->m_offsetFromPlayer = Math::cVector(0, 50, 150);
 			}
 			return position;
 		}

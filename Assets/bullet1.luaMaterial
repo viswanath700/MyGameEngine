@@ -1,0 +1,21 @@
+return
+{
+	effectPath = "data/effect.binEffect",
+	
+	uniformData =
+	{
+		{
+			name = "g_RGBColor",
+			values = { 1, 1, 1},
+			shaderType = "fragment",
+		},
+	},
+	
+	textureData =
+	{
+		{
+			name = "g_textureSampler",
+			path = "data/flag1.texture",
+		},
+	},
+}

@@ -30,6 +30,10 @@ struct NetworkPacket
 {
 	float x, y, z;
 	float m_x, m_y, m_z, m_w;
+	float fx, fy, fz;
+	float bx, by, bz;
+	bool bulletOn;
+	uint8_t score;
 	char type;
 };
 
@@ -53,6 +57,18 @@ namespace Game
 	bool downPressed = false;
 	bool rightPressed = false;
 	bool leftPressed = false;
+
+	// Capture the Flag
+	bool shootBullet;
+	float startBulletTime;
+	eae6320::Math::cVector bulletOffsetPos;
+	eae6320::Math::cVector capturePosition;
+	bool capturedFlag;
+	bool playerWon;
+	bool playerTagged;
+	float bulletCollisionOffset;
+	float flagCollisionOffset;
+	float capturePointOffset;
 
 	void initNetwork()
 	{
@@ -128,6 +144,18 @@ namespace Game
 				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_x);
 				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_y);
 				bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_z);
+
+				bsOut.Write(eae6320::Graphics::s_flag1->m_position.x);
+				bsOut.Write(eae6320::Graphics::s_flag1->m_position.y);
+				bsOut.Write(eae6320::Graphics::s_flag1->m_position.z);
+
+				bsOut.Write(eae6320::Graphics::s_bullet2->m_position.x);
+				bsOut.Write(eae6320::Graphics::s_bullet2->m_position.y);
+				bsOut.Write(eae6320::Graphics::s_bullet2->m_position.z);
+
+				bsOut.Write(eae6320::Graphics::s_bullet2->m_isActive);
+				bsOut.Write(eae6320::Graphics::s_snowmanClientScore->m_score);
+
 				networkMessage = "Sending message from client to server";
 
 				//DrawText(hDeviceContextHandle, networkMessage.c_str(), -1, &ClientRectangle, DT_SINGLELINE | DT_CENTER | DT_VCENTER);		
@@ -166,6 +194,10 @@ namespace Game
 				RakNet::RakString rs;
 				float x, y, z;
 				float m_w, m_x, m_y, m_z;
+				float fx, fy, fz;
+				float bx, by, bz;
+				bool bulletOn;
+				uint8_t score;
 				connectionEstablished = true;
 
 				RakNet::BitStream bsIn(packet->data, packet->length, false);
@@ -179,11 +211,28 @@ namespace Game
 				bsIn.Read(m_x);
 				bsIn.Read(m_y);
 				bsIn.Read(m_z);
+
+				bsIn.Read(fx);
+				bsIn.Read(fy);
+				bsIn.Read(fz);
+
+				bsIn.Read(bx);
+				bsIn.Read(by);
+				bsIn.Read(bz);
+
+				bsIn.Read(bulletOn);
+				bsIn.Read(score);
+
 				bsIn.Read(rs);
 				printf("%s\n", rs.C_String());
 
 				data.x = x; data.y = y; data.z = z;
 				data.m_w = m_w; data.m_x = m_x; data.m_y = m_y; data.m_z = m_z;
+				data.fx = fx; data.fy = fy; data.fz = fz;
+				data.bx = bx; data.by = by; data.bz = bz;
+				data.bulletOn = bulletOn;
+				data.score = score;
+
 				RakNet::BitStream bsOut;
 				//This will send the current Server/Client 's camera position
 				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
@@ -196,6 +245,17 @@ namespace Game
 					bsOut.Write(eae6320::Graphics::s_snowman->m_orientation.m_x);
 					bsOut.Write(eae6320::Graphics::s_snowman->m_orientation.m_y);
 					bsOut.Write(eae6320::Graphics::s_snowman->m_orientation.m_z);
+
+					bsOut.Write(eae6320::Graphics::s_flag2->m_position.x);
+					bsOut.Write(eae6320::Graphics::s_flag2->m_position.y);
+					bsOut.Write(eae6320::Graphics::s_flag2->m_position.z);
+
+					bsOut.Write(eae6320::Graphics::s_bullet1->m_position.x);
+					bsOut.Write(eae6320::Graphics::s_bullet1->m_position.y);
+					bsOut.Write(eae6320::Graphics::s_bullet1->m_position.z);
+
+					bsOut.Write(eae6320::Graphics::s_bullet1->m_isActive);
+					bsOut.Write(eae6320::Graphics::s_snowmanScore->m_score);
 
 
 					bsOut.Write("Server to Client");
@@ -212,6 +272,16 @@ namespace Game
 					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_y);
 					bsOut.Write(eae6320::Graphics::s_snowmanClient->m_orientation.m_z);
 
+					bsOut.Write(eae6320::Graphics::s_flag1->m_position.x);
+					bsOut.Write(eae6320::Graphics::s_flag1->m_position.y);
+					bsOut.Write(eae6320::Graphics::s_flag1->m_position.z);
+
+					bsOut.Write(eae6320::Graphics::s_bullet2->m_position.x);
+					bsOut.Write(eae6320::Graphics::s_bullet2->m_position.y);
+					bsOut.Write(eae6320::Graphics::s_bullet2->m_position.z);
+
+					bsOut.Write(eae6320::Graphics::s_bullet2->m_isActive);
+					bsOut.Write(eae6320::Graphics::s_snowmanClientScore->m_score);
 
 					bsOut.Write("Client to Server");
 					networkMessage = "Sending from Client to server";
@@ -279,6 +349,91 @@ namespace Game
 		}
 	}
 
+	void CaptureTheFlag(eae6320::Graphics::GameObject* player, eae6320::Graphics::GameObject* flag, eae6320::Graphics::GameObject* bullet, uint8_t& score)
+	{
+		bool gameReset = false;
+		if (isServer)
+		{
+			capturePosition = eae6320::Math::cVector(1015, 0, -1088);
+		}
+		else
+		{
+			capturePosition = eae6320::Math::cVector(-1015, 0, 1088);
+		}
+
+		//check for flag
+		if (player->m_position.x < flag->m_position.x + flagCollisionOffset && player->m_position.x > flag->m_position.x - flagCollisionOffset
+			&& player->m_position.z < flag->m_position.z + flagCollisionOffset && player->m_position.z > flag->m_position.z - flagCollisionOffset)
+		{
+			capturedFlag = true;
+		}
+
+		//attach flag
+		if (capturedFlag && !playerWon && !playerTagged)
+		{
+			flag->m_position = player->m_position;
+		}
+
+		//check for score zone
+		if (player->m_position.x < capturePosition.x + capturePointOffset && player->m_position.x > capturePosition.x - capturePointOffset
+			&& player->m_position.z < capturePosition.z + capturePointOffset && player->m_position.z > capturePosition.z - capturePointOffset && capturedFlag && !playerWon)
+		{
+			playerWon = true;
+			flag->m_position = flag->m_defaultPosition;
+			score++;
+			gameReset = true;
+			//gameReset = Graphics::dogaObject->Reset();
+		}
+
+		//check for tag
+		if (player->m_position.x < bullet->m_position.x + bulletCollisionOffset && player->m_position.x > bullet->m_position.x - bulletCollisionOffset
+			&& player->m_position.z < bullet->m_position.z + bulletCollisionOffset && player->m_position.z > bullet->m_position.z - bulletCollisionOffset
+			&& capturedFlag && !playerWon && bullet->m_isActive)
+		{
+			playerTagged = true;
+			flag->m_position = flag->m_defaultPosition;
+			gameReset = true;
+			//gameReset = Graphics::dogaObject->ResetFlag();
+
+		}
+
+		if (gameReset)
+		{
+			playerWon = false;
+			capturedFlag = false;
+			playerTagged = false;
+		}
+	}
+
+	void ShootBullet(eae6320::Graphics::GameObject* bullet, eae6320::Graphics::GameObject* player, int shootKey)
+	{
+		eae6320::Math::cVector bulletOffset(0.0f, 0.0f, 0.0f);
+		if (eae6320::UserInput::IsKeyPressed(shootKey) && !shootBullet)
+		{
+			bullet->m_isActive = true;
+			bullet->m_position = player->m_position + bulletOffsetPos;
+			startBulletTime = eae6320::Time::GetTotalSecondsElapsed();
+			shootBullet = true;
+		}
+
+		if (shootBullet)
+		{
+			bulletOffset.z -= 3.0f;
+			bulletOffset.y -= 0.1f;
+			bulletOffset *= 300 * eae6320::Time::GetSecondsElapsedThisFrame();
+			eae6320::Math::cMatrix_transformation mat = eae6320::Math::cMatrix_transformation::cMatrix_transformation(player->m_orientation, bullet->m_position);
+			bullet->m_position = (eae6320::Math::cMatrix_transformation::matrixMulVector(mat, bulletOffset));
+		}
+
+		if ((eae6320::Time::GetTotalSecondsElapsed() - startBulletTime) > 1 && shootBullet)
+		{
+			//stop bullet
+			shootBullet = false;
+			bullet->m_position = player->m_position + bulletOffsetPos;
+			bullet->m_isActive = false;
+		}
+	}
+
 	// Helper to update renderable position
 	bool UpdateEntities_vector()
 	{
@@ -287,6 +442,9 @@ namespace Game
 		eae6320::Math::cVector offset(0.0f, 0.0f, 0.0f);
 		eae6320::Math::cVector rotationOffset(0.0f, 0.0f, 0.0f);
 		eae6320::Math::cVector thirdPersonCamOffset(0.0f, 0.0f, 0.0f);
+		
+		float unitsPerSecond = 300.0f;	// This is arbitrary
+		
 		{
 			if(isServer)
 			{
@@ -334,6 +492,18 @@ namespace Game
 				{
 					thirdPersonCamOffset.x += 5.0f;
 				}
+				
+				// Sprint
+				if (eae6320::UserInput::IsKeyPressed(VK_LSHIFT) && eae6320::Graphics::s_sprintBar->barPosition > 0)
+				{
+					unitsPerSecond = 500.0f;
+					eae6320::Graphics::s_sprintBar->barPosition -= 0.1f;
+				}
+				else if (eae6320::Graphics::s_sprintBar->barPosition < 150)
+				{
+					unitsPerSecond = 200.0f;
+					eae6320::Graphics::s_sprintBar->barPosition += 0.02f;
+				}
 			}
 			else
 			{
@@ -380,10 +550,21 @@ namespace Game
 				{
 					thirdPersonCamOffset.x += 5.0f;
 				}
+
+				// Sprint
+				if (eae6320::UserInput::IsKeyPressed(VK_RSHIFT) && eae6320::Graphics::s_sprintBar->barPosition > 0)
+				{
+					unitsPerSecond = 500.0f;
+					eae6320::Graphics::s_sprintBar->barPosition -= 0.1f;
+				}
+				else if (eae6320::Graphics::s_sprintBar->barPosition < 150)
+				{
+					unitsPerSecond = 200.0f;
+					eae6320::Graphics::s_sprintBar->barPosition += 0.02f;
+				}
 			}
 
 			// Get the speed
-			const float unitsPerSecond = 300.0f;	// This is arbitrary
 			const float unitsToMove = unitsPerSecond * eae6320::Time::GetSecondsElapsedThisFrame();	// This makes the speed frame-rate-independent
 																									// Normalize the offset
 			offset *= unitsToMove;
@@ -652,14 +833,28 @@ namespace Game
 
 	bool Initialize(const HWND i_renderingWindow, bool serverState)
 	{
+		// Networking
 		isServer = serverState;
 		initNetwork();
+
+		// Capture the Flag
+		startBulletTime = 0;
+		capturedFlag = false;
+		flagCollisionOffset = 100;
+		capturePointOffset = 500;
+		bulletCollisionOffset = 40;
+		playerWon = false;
+		shootBullet = false;
+		bulletOffsetPos = eae6320::Math::cVector(0, 40, 0);
 
 		return eae6320::Graphics::Initialize(i_renderingWindow);
 	}
 
 	void Run() {
 		eae6320::Time::OnNewFrame();
+
+		if (eae6320::UserInput::IsKeyPressed(VK_SPACE))
+			eae6320::Graphics::s_clientJoined = true;
 
 		EnableDebugMenu();
 
@@ -673,7 +868,54 @@ namespace Game
 			DebugMenuNavigation();
 		}
 
+		if (isServer)
+		{
+			eae6320::Graphics::DoCOllisions(eae6320::Graphics::s_snowman);
+
+			ShootBullet(eae6320::Graphics::s_bullet1, eae6320::Graphics::s_snowman, VK_LCONTROL);
+			CaptureTheFlag(eae6320::Graphics::s_snowman, eae6320::Graphics::s_flag2, eae6320::Graphics::s_bullet2, eae6320::Graphics::s_snowmanScore->m_score);
+
+			eae6320::Graphics::s_flag1->m_position.x = data.fx;
+			eae6320::Graphics::s_flag1->m_position.y = data.fy;
+			eae6320::Graphics::s_flag1->m_position.z = data.fz;
+
+			eae6320::Graphics::s_bullet2->m_position.x = data.bx;
+			eae6320::Graphics::s_bullet2->m_position.y = data.by;
+			eae6320::Graphics::s_bullet2->m_position.z = data.bz;
+
+			eae6320::Graphics::s_bullet2->m_isActive = data.bulletOn;
+			eae6320::Graphics::s_snowmanClientScore->m_score = data.score;
+		}
+		else
+		{
+			eae6320::Graphics::DoCOllisions(eae6320::Graphics::s_snowmanClient);
+
+			ShootBullet(eae6320::Graphics::s_bullet2, eae6320::Graphics::s_snowmanClient, VK_RCONTROL);
+			CaptureTheFlag(eae6320::Graphics::s_snowmanClient, eae6320::Graphics::s_flag1, eae6320::Graphics::s_bullet1, eae6320::Graphics::s_snowmanClientScore->m_score);
+
+			eae6320::Graphics::s_flag2->m_position.x = data.fx;
+			eae6320::Graphics::s_flag2->m_position.y = data.fy;
+			eae6320::Graphics::s_flag2->m_position.z = data.fz;
+
+			eae6320::Graphics::s_bullet1->m_position.x = data.bx;
+			eae6320::Graphics::s_bullet1->m_position.y = data.by;
+			eae6320::Graphics::s_bullet1->m_position.z = data.bz;
+
+			eae6320::Graphics::s_bullet1->m_isActive = data.bulletOn;
+			eae6320::Graphics::s_snowmanScore->m_score = data.score;
+		}
+
 		updateNetwork();
+
+		if (isServer)
+		{
+			
+		}
+		else
+		{
+
+		}
+
 		eae6320::Graphics::Render();
 	}
 

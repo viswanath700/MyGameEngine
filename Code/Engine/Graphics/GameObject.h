@@ -31,7 +31,9 @@ namespace eae6320
 			Graphics::Mesh m_mesh;
 			Graphics::Material m_material;
 
+			bool m_isActive;
 			Math::cVector m_position;
+			Math::cVector m_defaultPosition;
 			Math::cQuaternion m_orientation;
 			BoxCollider m_collider;
 			Math::cVector m_velocity;

@@ -94,3 +94,42 @@ void eae6320::Graphics::DebugMenuButton::DrawDebugButton(uint8_t i_color)
 	m_Text.DrawDebugText(i_color);
 	m_button.Draw();
 }
+
+// DebugMenuBar
+
+void eae6320::Graphics::DebugMenuBar::LoadDebugBar()
+{
+	m_Text.LoadDebugText();
+}
+
+void eae6320::Graphics::DebugMenuBar::DrawDebugBar(uint8_t color)
+{
+	if (barPosition >= 20)
+		barPosition = 20;
+	if (barPosition <= 0)
+		barPosition = 0;
+
+	for (int i = 1; i <= barPosition; i++)
+		m_sliderMsg[i-1] = '#';
+
+	for (int i = barPosition; i < 20; i++)
+		m_sliderMsg[i] = '_';
+
+	m_Text.m_message = m_textMessage + m_sliderMsg;
+
+	m_Text.DrawDebugText(color);
+}
+
+// DebugMenuScore
+
+void eae6320::Graphics::DebugMenuScore::LoadDebugText()
+{
+	D3DXCreateFont(Graphics::GetLocalDirect3dDevice(), 22, 0, FW_NORMAL, 1, false, DEFAULT_CHARSET,
+		OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &m_font);
+}
+
+void eae6320::Graphics::DebugMenuScore::DrawDebugText(uint8_t i_color)
+{
+	std::string scoreMsg = m_message + std::to_string(m_score);
+	m_font->DrawText(NULL, scoreMsg.c_str(), -1, m_textArea, DT_LEFT | DT_NOCLIP, D3DCOLOR_XRGB(i_color, 0, 0));
+}

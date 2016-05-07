@@ -46,6 +46,15 @@ namespace eae6320
 		extern DebugLine* s_snowmanLine;
 		extern CollisionDetection* s_collisionDet;
 
+		extern GameObject* s_flag1;
+		extern GameObject* s_flag2;
+		extern GameObject* s_bullet1;
+		extern GameObject* s_bullet2;
+		extern DebugMenuBar* s_sprintBar;
+		extern DebugMenuScore* s_snowmanScore;
+		extern DebugMenuScore* s_snowmanClientScore;
+		extern bool s_clientJoined;
+
 		extern GameSprite* s_numbers;
 
 		extern DebugMenuSelection s_activeMenuItem;
@@ -68,6 +77,8 @@ namespace eae6320
 		bool StartFrame();
 		bool EndFrame();
 		bool ShowFrame();
+
+		void DoCOllisions(GameObject* player);
 
 		bool LoadObjects();
 		void ReleaseObjects();

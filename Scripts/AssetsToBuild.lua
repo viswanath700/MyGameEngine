@@ -20,6 +20,9 @@ return
 			"cylinder2",
 			"snowman",
 			"collisionData",
+			"flag1",
+			"flag2",
+			"bullet",
 		},
 		dependencies =
 		{
@@ -94,6 +97,10 @@ return
 			"cylinder2",
 			"snowman",
 			"snowmanClient",
+			"flag1",
+			"flag2",
+			"bullet1",
+			"bullet2",
 		},
 		dependencies =
 		{
@@ -120,6 +127,8 @@ return
 			"button",
 			"earth",
 			"football",
+			"flag1",
+			"flag2",
 		},
 		dependencies =
 		{
