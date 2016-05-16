@@ -104,7 +104,7 @@ bool eae6320::Graphics::LoadObjects()
 	// Debug Menu Stuff
 	s_debugMenuTextFPS = eae6320::Graphics::DebugMenuText("FPS = ", 20, 20, 150, 50);
 	s_debugMenuCheckBox = new eae6320::Graphics::DebugMenuCheckBox("Enable Debug Sphere ", 20, 50, 200, 50);
-	s_debugMenuSlider = new eae6320::Graphics::DebugMenuSlider("Radius of Debug Sphere ", 20, 80, 200, 50);
+	s_debugMenuSlider = new eae6320::Graphics::DebugMenuSlider("Volume ", 20, 80, 200, 50);
 	s_debugMenuButton = new eae6320::Graphics::DebugMenuButton("Reset Radius of Debug Sphere ", 20, 110, 275, 50);
 	s_toggleFPSCheckBox = new eae6320::Graphics::DebugMenuCheckBox("Enable Fly Camera ", 20, 140, 200, 50);
 #endif

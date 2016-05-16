@@ -1045,6 +1045,7 @@ namespace Game
 		updateNetwork();
 
 		PlayMovementAudio(eae6320::Graphics::s_snowmanClient);
+		eae6320::Audio::SetVolumeAll(9);
 
 		eae6320::Graphics::Render();
 	}

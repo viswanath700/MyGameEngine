@@ -5,6 +5,7 @@
 
 #include <vector>
 
+#include "../../Engine/Graphics/Graphics.h"
 #include "../../Engine/UserOutput/UserOutput.h"
 
 #define fourccRIFF 'FFIR'
@@ -195,5 +196,19 @@ namespace eae6320
 
 		hr = s_pXAudio2->CreateMasteringVoice(&s_pMasterVoice);
 		assert(SUCCEEDED(hr));
+	}
+
+	void Audio::SetVolumeAll(int count)
+	{
+		float volume = (float)(Graphics::s_debugMenuSlider->sliderCurrentPosition) / 20.0f;
+
+		if (volume < 0)
+			volume = 0;
+
+		if (volume > 1)
+			volume = 1;
+
+		for (int i = 0; i < count; i++)
+			s_SourceVoices[i]->SetVolume(volume);
 	}
 }

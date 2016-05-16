@@ -112,7 +112,6 @@ namespace eae6320
 			return pos;
 		}
 	
-
 		int CollisionDetection::RayTriangleIntersection(Math::cVector& v1, Math::cVector& v2, Math::cVector& v3,float length, CollisionData *collD)
 		{
 			Math::cVector e1, e2;
@@ -183,7 +182,6 @@ namespace eae6320
 			}
 				return 0;
 		}
-
 
 		bool CollisionDetection::CheckIfPointInTriangle(Math::cVector &polygonInterectionPoint, Math::cVector &vertex1, Math::cVector &vertex2, Math::cVector &vertex3)
 		{
